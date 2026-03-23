@@ -50,7 +50,7 @@ export async function initSchema(): Promise<void> {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       UNIQUE KEY uk_id_1688 (id_1688)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
 
   await p.query(`
@@ -65,7 +65,7 @@ export async function initSchema(): Promise<void> {
       seller_url VARCHAR(1000),
       raw_data JSON,
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
 
   await p.query(`
@@ -78,7 +78,7 @@ export async function initSchema(): Promise<void> {
       price_usd DECIMAL(10,2),
       category VARCHAR(200),
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
 
   await p.query(`
@@ -92,7 +92,7 @@ export async function initSchema(): Promise<void> {
       passed TINYINT(1) DEFAULT 1,
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
       INDEX idx_product_id (product_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
 
   await p.query(`
@@ -104,7 +104,7 @@ export async function initSchema(): Promise<void> {
       sort_order INT DEFAULT 0,
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
       INDEX idx_product_id (product_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
 
   await p.query(`
@@ -117,7 +117,7 @@ export async function initSchema(): Promise<void> {
       sort_order INT DEFAULT 0,
       FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE CASCADE,
       INDEX idx_variant_id (variant_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
 
   await p.query(`
@@ -132,7 +132,7 @@ export async function initSchema(): Promise<void> {
       image_url VARCHAR(1000),
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
       INDEX idx_product_id (product_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
 
   await p.query(`
@@ -146,7 +146,7 @@ export async function initSchema(): Promise<void> {
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       UNIQUE KEY uk_product_platform (product_id, platform),
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
 
   logger.info('Schema initialized');
