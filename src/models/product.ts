@@ -46,8 +46,18 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   'fashion wallets':    { ebayCategoryId: 169285, ebayCategoryName: 'Backpacks, Bags & Briefcases', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Wallet', Material: 'Faux Leather', 'Country/Region of Manufacture': 'China' } },
 
   // ── Hair Accessories ───────────────────────────────────────────────
-  'hair claws': { ebayCategoryId: 261786, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Claw', Material: 'Plastic', 'Country/Region of Manufacture': 'China' } },
-  'hair pins':  { ebayCategoryId: 261786, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Pin', Material: 'Metal', 'Country/Region of Manufacture': 'China' } },
+  'hair claws':           { ebayCategoryId: 261786, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Claw', Material: 'Plastic', 'Country/Region of Manufacture': 'China' } },
+  'hair pins':            { ebayCategoryId: 261786, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Pin', Material: 'Metal', 'Country/Region of Manufacture': 'China' } },
+  'hair accessories set': { ebayCategoryId: 261786, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Set', Material: 'Mixed', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Eyeglass Frames ──────────────────────────────────────────────
+  'optical frames': { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Frame Material': 'Metal', 'Lens Technology': 'Standard', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Women's Shoes ────────────────────────────────────────────────
+  'womens fashion shoes': { ebayCategoryId: 55793, ebayCategoryName: 'Women\'s Shoes', conditionId: 1500, variationDimensions: ['Color', 'US Shoe Size (Women\'s)'], itemSpecifics: { Department: 'Women', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Men's Shoes ──────────────────────────────────────────────────
+  'mens casual shoes': { ebayCategoryId: 93427, ebayCategoryName: 'Men\'s Shoes', conditionId: 1500, variationDimensions: ['Color', 'US Shoe Size'], itemSpecifics: { Department: 'Men', Style: 'Casual Shoes', 'Country/Region of Manufacture': 'China' } },
 
   // ── Scarves ────────────────────────────────────────────────────────
   'silk scarves':   { ebayCategoryId: 45238, ebayCategoryName: 'Scarves & Wraps', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Scarf', Material: 'Silk', 'Country/Region of Manufacture': 'China' } },
