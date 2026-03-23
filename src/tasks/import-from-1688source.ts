@@ -66,7 +66,7 @@ async function main() {
     INNER JOIN ${sourceDb}.products_en spe
       ON spe.product_id = sp.id
     WHERE sp.category IN (${placeholders})
-      AND sp.status IN ('translated', 'ae_enriched', 'exported', 'amazon_exported')
+      AND sp.status IN ('translated', 'ae_enriched', 'exported', 'amazon_exported', 'ae_exported')
       AND sp.id_1688 NOT IN (
         SELECT id_1688 FROM products
       )
@@ -103,8 +103,8 @@ async function main() {
 
       // Copy products_raw
       await pool.query(`
-        INSERT IGNORE INTO products_raw (product_id, title_zh, description_zh, specifications_zh, price_cny, seller_name, seller_url)
-        SELECT ?, spr.title_zh, spr.description_zh, spr.specifications_zh, spr.price_cny, spr.seller_name, spr.seller_url
+        INSERT IGNORE INTO products_raw (product_id, title_zh, description_zh, specifications_zh, price_cny, seller_name)
+        SELECT ?, spr.title_zh, spr.description_zh, spr.specifications_zh, spr.price_cny, spr.seller_name
         FROM ${sourceDb}.products_raw spr
         WHERE spr.product_id = ?
       `, [localProductId, sp.id]);

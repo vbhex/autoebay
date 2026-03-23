@@ -62,8 +62,6 @@ export async function initSchema(): Promise<void> {
       specifications_zh JSON,
       price_cny DECIMAL(10,2),
       seller_name VARCHAR(200),
-      seller_url VARCHAR(1000),
-      raw_data JSON,
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
