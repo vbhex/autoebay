@@ -274,7 +274,7 @@ function buildBaseRow(
 ): string[] {
   const row = emptyRow();
 
-  row[COL_IDX['Action']] = 'ADD';
+  row[COL_IDX['Action']] = 'Add';
   row[COL_IDX['CustomLabel']] = opts.sku;
   row[COL_IDX['Category']] = String(catInfo.ebayCategoryId);
   row[COL_IDX['Title']] = opts.title;
