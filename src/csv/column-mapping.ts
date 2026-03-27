@@ -29,10 +29,15 @@ export const CSV_COLUMNS = [
   'Country',                   // Ship-from country code (CN)
   'Currency',                  // USD
   'Brand',                     // Item specific: Brand
+  'C:MPN',                     // Manufacturer Part Number (required — 'Does Not Apply' for unbranded)
   'C:Country/Region of Manufacture', // Item specific
   // Variation columns
   'Relationship',              // Variation
-  'RelationshipDetails',       // Color=Red, Size=M, etc.
+  'RelationshipDetails',       // Color=Red;Size=M
+  // Variation specifics columns (must match names in RelationshipDetails)
+  'C:Color',                   // Variation dimension: Color
+  'C:Size',                    // Variation dimension: Size
+  'C:Style',                   // Variation dimension: Style
   // Image columns for variations
   '*PicURL',                   // Additional image URLs (pipe-separated)
 ] as const;

@@ -211,6 +211,12 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         childRow[COL_IDX['Relationship']] = 'Variation';
         childRow[COL_IDX['RelationshipDetails']] = relationDetails;
 
+        // Populate C:Color, C:Size, C:Style columns from variant values
+        const variantValues = parseRelationDetails(relationDetails);
+        if (variantValues.Color) childRow[COL_IDX['C:Color']] = variantValues.Color;
+        if (variantValues.Size) childRow[COL_IDX['C:Size']] = variantValues.Size;
+        if (variantValues.Style) childRow[COL_IDX['C:Style']] = variantValues.Style;
+
         if (sku.imageUrl) {
           childRow[COL_IDX['PicURL']] = sku.imageUrl;
         }
@@ -286,6 +292,7 @@ function buildBaseRow(
   row[COL_IDX['Location']] = config.listing.shipsFrom;
   row[COL_IDX['Country']] = 'CN';
   row[COL_IDX['Brand']] = config.listing.brandName;
+  row[COL_IDX['C:MPN']] = 'Does Not Apply';
   row[COL_IDX['C:Country/Region of Manufacture']] = 'China';
   row[COL_IDX['DispatchTimeMax']] = String(config.listing.dispatchDays);
 
@@ -324,6 +331,17 @@ function buildVariantMap(
     map.set(dimName, valueMap);
   }
   return map;
+}
+
+function parseRelationDetails(details: string): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const part of details.split(';')) {
+    const eq = part.indexOf('=');
+    if (eq > 0) {
+      result[part.substring(0, eq)] = part.substring(eq + 1);
+    }
+  }
+  return result;
 }
 
 function buildRelationDetails(
