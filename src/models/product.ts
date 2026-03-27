@@ -68,6 +68,34 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
 
   // ── Gloves ─────────────────────────────────────────────────────────
   'fashion gloves': { ebayCategoryId: 105559, ebayCategoryName: 'Gloves & Mittens', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Suspenders & Braces ───────────────────────────────────────────
+  'SuspendersBracesPostureCor': { ebayCategoryId: 105387, ebayCategoryName: 'Suspenders', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Department: 'Unisex Adults', Material: 'Elastic', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Ties & Tie Accessories ────────────────────────────────────────
+  'Ties':              { ebayCategoryId: 15662, ebayCategoryName: 'Ties', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Necktie', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+  'TieSet':            { ebayCategoryId: 15662, ebayCategoryName: 'Ties', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Set', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+  'TieChains':         { ebayCategoryId: 50638, ebayCategoryName: 'Tie Clasps & Tacks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'TieClip':           { ebayCategoryId: 50638, ebayCategoryName: 'Tie Clasps & Tacks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'TieBucklesCufflinks': { ebayCategoryId: 50637, ebayCategoryName: 'Cufflinks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'TieClipsCufflinks': { ebayCategoryId: 50637, ebayCategoryName: 'Cufflinks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Handkerchiefs & Pocket Squares ────────────────────────────────
+  'Handkerchiefs': { ebayCategoryId: 167902, ebayCategoryName: 'Handkerchiefs & Pocket Squares', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+  'PocketSquares': { ebayCategoryId: 167902, ebayCategoryName: 'Handkerchiefs & Pocket Squares', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Sashes ────────────────────────────────────────────────────────
+  'Sashes':        { ebayCategoryId: 45238, ebayCategoryName: 'Scarves & Wraps', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sash', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+  'sun scarves':   { ebayCategoryId: 45238, ebayCategoryName: 'Scarves & Wraps', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Scarf', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Cummerbunds ───────────────────────────────────────────────────
+  'Cummerbunds': { ebayCategoryId: 105384, ebayCategoryName: 'Cummerbunds', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Collar Stays ──────────────────────────────────────────────────
+  'CollarStays': { ebayCategoryId: 105392, ebayCategoryName: 'Collar Stays', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Metal', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Sneakers ──────────────────────────────────────────────────────
+  'sneakers': { ebayCategoryId: 15709, ebayCategoryName: 'Athletic Shoes', conditionId: 1500, variationDimensions: ['Color', 'US Shoe Size'], itemSpecifics: { Department: 'Unisex', Style: 'Sneakers', 'Country/Region of Manufacture': 'China' } },
 };
 
 export const EBAY_CATEGORIES = Object.keys(EBAY_CATEGORY_MAP);
