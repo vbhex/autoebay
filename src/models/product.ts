@@ -28,10 +28,10 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   'fashion anklets':    { ebayCategoryId: 261987, ebayCategoryName: 'Fashion Bracelets & Charms', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Anklet', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
 
   // ── Sunglasses & Eyewear ──────────────────────────────────────────
-  'polarized sunglasses': { ebayCategoryId: 179247, ebayCategoryName: 'Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', 'Country/Region of Manufacture': 'China' } },
-  'sports sunglasses':    { ebayCategoryId: 179247, ebayCategoryName: 'Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', Style: 'Sport', 'Country/Region of Manufacture': 'China' } },
-  'blue light glasses':   { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Lens Technology': 'Blue Light Filter', 'Frame Material': 'Plastic', 'Country/Region of Manufacture': 'China' } },
-  'reading glasses':      { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color', 'Lens Strength'], itemSpecifics: { 'Frame Material': 'Plastic', 'Country/Region of Manufacture': 'China' } },
+  'polarized sunglasses': { ebayCategoryId: 179247, ebayCategoryName: 'Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sunglasses', Department: 'Unisex Adults', 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', 'Country/Region of Manufacture': 'China' } },
+  'sports sunglasses':    { ebayCategoryId: 179247, ebayCategoryName: 'Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sunglasses', Department: 'Unisex Adults', 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', Style: 'Sport', 'Country/Region of Manufacture': 'China' } },
+  'blue light glasses':   { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Eyeglasses', Department: 'Unisex Adults', Style: 'Fashion', 'Frame Material': 'Plastic', 'Lens Technology': 'Blue Light Filter', 'Country/Region of Manufacture': 'China' } },
+  'reading glasses':      { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color', 'Lens Strength'], itemSpecifics: { Type: 'Reading Glasses', Department: 'Unisex Adults', Style: 'Fashion', 'Frame Material': 'Plastic', 'Country/Region of Manufacture': 'China' } },
 
   // ── Hats & Caps ────────────────────────────────────────────────────
   'bucket hats':    { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Style: 'Bucket Hat', Department: 'Unisex Adults', Material: 'Cotton', 'Country/Region of Manufacture': 'China' } },
@@ -51,7 +51,7 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   'hair accessories set': { ebayCategoryId: 261786, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Set', Material: 'Mixed', 'Country/Region of Manufacture': 'China' } },
 
   // ── Eyeglass Frames ──────────────────────────────────────────────
-  'optical frames': { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Frame Material': 'Metal', 'Lens Technology': 'Standard', 'Country/Region of Manufacture': 'China' } },
+  'optical frames': { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Eyeglasses', Department: 'Unisex Adults', Style: 'Fashion', 'Frame Material': 'Metal', 'Lens Technology': 'Standard', 'Country/Region of Manufacture': 'China' } },
 
   // ── Women's Shoes ────────────────────────────────────────────────
   'womens fashion shoes': { ebayCategoryId: 55793, ebayCategoryName: 'Women\'s Shoes', conditionId: 1500, variationDimensions: ['Color', 'US Shoe Size (Women\'s)'], itemSpecifics: { Department: 'Women', 'Country/Region of Manufacture': 'China' } },

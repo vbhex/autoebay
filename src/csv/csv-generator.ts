@@ -189,20 +189,12 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
       prod.variantStructure && prod.variantStructure.length > 0;
 
     if (hasVariants) {
-      // ── Parent row (no price/qty — set on children) ──────────────────────
-      const parentRow = buildRow(prod, catInfo, {
-        sku: baseSku,
-        title,
-        description,
-        price: 0,
-        galleryImages,
-        isParent: true,
-      });
-      dataRows.push(parentRow);
-      totalDataRows++;
-
-      // ── Child rows ───────────────────────────────────────────────────────
+      // ── Build child rows first so we can aggregate values for parent ──────
       const variantMap = buildVariantMap(prod);
+      const childRows: string[][] = [];
+      const allColors = new Set<string>();
+      const allSizes  = new Set<string>();
+      const allStyles = new Set<string>();
 
       for (const sku of prod.skus!) {
         if (!sku.available) continue;
@@ -225,17 +217,46 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         childRow[COL_IDX['RelationshipDetails']] = relationDetails;
 
         // Item specifics for variation dimensions
-        if (variantValues.Color) childRow[COL_IDX['*C:Color']] = variantValues.Color;
-        if (variantValues.Size) childRow[COL_IDX['*C:Size']] = variantValues.Size;
-        if (variantValues.Style) childRow[COL_IDX['*C:Style']] = variantValues.Style;
+        if (variantValues.Color) {
+          childRow[COL_IDX['*C:Color']] = variantValues.Color;
+          allColors.add(variantValues.Color);
+        }
+        if (variantValues.Size) {
+          childRow[COL_IDX['*C:Size']] = variantValues.Size;
+          allSizes.add(variantValues.Size);
+        }
+        if (variantValues.Style) {
+          childRow[COL_IDX['*C:Style']] = variantValues.Style;
+          allStyles.add(variantValues.Style);
+        }
 
         if (sku.imageUrl) {
           childRow[COL_IDX['PicURL']] = sku.imageUrl;
         }
 
-        dataRows.push(childRow);
-        totalDataRows++;
+        childRows.push(childRow);
       }
+
+      if (childRows.length === 0) continue; // skip if no available SKUs
+
+      // ── Parent row — aggregate all child variant values ───────────────────
+      const parentRow = buildRow(prod, catInfo, {
+        sku: baseSku,
+        title,
+        description,
+        price: 0,
+        galleryImages,
+        isParent: true,
+      });
+
+      // Parent lists ALL values for each variation dimension, pipe-separated
+      if (allColors.size > 0) parentRow[COL_IDX['*C:Color']] = [...allColors].join('|');
+      if (allSizes.size  > 0) parentRow[COL_IDX['*C:Size']]  = [...allSizes].join('|');
+      if (allStyles.size > 0) parentRow[COL_IDX['*C:Style']] = [...allStyles].join('|');
+
+      dataRows.push(parentRow);
+      totalDataRows++;
+      for (const cr of childRows) { dataRows.push(cr); totalDataRows++; }
     } else {
       // ── Standalone listing (no variations) ───────────────────────────────
       const row = buildRow(prod, catInfo, {
@@ -259,20 +280,19 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
   // ── Assemble the file ───────────────────────────────────────────────────────
   const parts: string[] = [];
 
-  // Line 0: metadata (pad to 96 cols)
-  parts.push(padTo96(INFO_LINE));
+  // Line 0: metadata
+  parts.push(INFO_LINE);
 
   // Line 1: 96-column header
   parts.push(getHeaderRow().map(escapeCSV).join(','));
 
-  // Lines 2-4: three empty rows (96 commas each)
-  const emptyLine = emptyRow().join(',');
-  parts.push(emptyLine);
-  parts.push(emptyLine);
-  parts.push(emptyLine);
+  // Lines 2-4: three truly empty rows (eBay template format — no commas)
+  parts.push('');
+  parts.push('');
+  parts.push('');
 
-  // Line 5: help link (pad to 96 cols)
-  parts.push(padTo96(HELP_LINE));
+  // Line 5: help link
+  parts.push(HELP_LINE);
 
   // Data rows
   for (const row of dataRows) {
@@ -390,6 +410,16 @@ function buildRow(
     // PicURL supports pipe-separated URLs for multiple images
     const allUrls = opts.galleryImages.slice(0, 12).map(img => img.imageUrl);
     row[COL_IDX['PicURL']] = allUrls.join('|');
+    row[COL_IDX['GalleryType']] = 'Gallery';
+  }
+
+  // ── Required field fallbacks (for non-variation / standalone rows) ──────────
+  // These are set ONLY if still empty — variation child rows override them later.
+  // *C:Color, *C:Size, *C:Style are required by the template header.
+  if (!row[COL_IDX['*C:Color']]) row[COL_IDX['*C:Color']] = 'Multicolor';
+  if (!row[COL_IDX['*C:Size']])  row[COL_IDX['*C:Size']]  = 'One Size';
+  if (!row[COL_IDX['*C:Style']] && !catInfo.itemSpecifics.Style) {
+    row[COL_IDX['*C:Style']] = 'Fashion';
   }
 
   return row;
