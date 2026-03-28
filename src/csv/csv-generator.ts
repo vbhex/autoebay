@@ -80,14 +80,19 @@ function buildDescription(
   specs: Array<{ name: string; value: string }>,
 ): string {
   const lines: string[] = [];
-  lines.push(`<h2>${escapeHTML(title)}</h2>`);
+  lines.push(`<h2>${escapeHTML(sanitizeTitle(title))}</h2>`);
 
   if (specs.length > 0) {
     lines.push('<h3>Specifications</h3>');
     lines.push('<ul>');
     for (const spec of specs) {
       if (spec.name && spec.value) {
-        lines.push(`<li><strong>${escapeHTML(spec.name)}</strong>: ${escapeHTML(spec.value)}</li>`);
+        // Sanitize both spec name and value to remove prohibited medical terms
+        const cleanName  = sanitizeTitle(spec.name);
+        const cleanValue = sanitizeTitle(spec.value);
+        if (cleanName && cleanValue) {
+          lines.push(`<li><strong>${escapeHTML(cleanName)}</strong>: ${escapeHTML(cleanValue)}</li>`);
+        }
       }
     }
     lines.push('</ul>');
@@ -218,6 +223,10 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
       const childRows: string[][] = [];
       const allColors = new Set<string>();
       const allSizes  = new Set<string>();
+      // Deduplicate by RelationshipDetails — eBay error 21916586 fires when two child rows
+      // produce the same combination (e.g. two SKUs that differ only in a Style dimension
+      // that we don't export, resulting in identical Color values).
+      const seenRelDets = new Set<string>();
 
       for (const sku of prod.skus!) {
         if (!sku.available) continue;
@@ -225,6 +234,11 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         const childSku = `${baseSku}-${sku.id}`;
         const childPrice = calculatePriceUsd(sku.priceCny || prod.priceCny, en.priceUsd);
         const relationDetails = buildRelationDetails(sku.variantValuesJson, variantMap);
+
+        // Skip duplicate variation combinations (same RelationshipDetails already seen)
+        if (!relationDetails || seenRelDets.has(relationDetails)) continue;
+        seenRelDets.add(relationDetails);
+
         const variantValues = parseRelationDetails(relationDetails);
 
         const childRow = buildRow(prod, catInfo, {
