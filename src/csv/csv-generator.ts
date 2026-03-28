@@ -133,22 +133,89 @@ function isSizeKey(key: string): boolean {
   return SIZE_WORDS.some(w => k.includes(w));
 }
 
+function containsChinese(s: string): boolean {
+  return /[\u4e00-\u9fff]/.test(s);
+}
+
+/** Fallback lookup for untranslated Chinese color/size names. */
+const CHINESE_VALUE_MAP: Record<string, string> = {
+  // Colors
+  '红色': 'Red',     '红': 'Red',
+  '蓝色': 'Blue',    '蓝': 'Blue',
+  '绿色': 'Green',   '绿': 'Green',
+  '黄色': 'Yellow',  '黄': 'Yellow',
+  '白色': 'White',   '白': 'White',
+  '黑色': 'Black',   '黑': 'Black',
+  '紫色': 'Purple',  '紫': 'Purple',
+  '粉色': 'Pink',    '粉': 'Pink',    '粉红': 'Pink',
+  '橙色': 'Orange',  '橙': 'Orange',  '橘色': 'Orange',  '橘红': 'Orange Red',
+  '灰色': 'Gray',    '灰': 'Gray',
+  '棕色': 'Brown',   '棕': 'Brown',
+  '金色': 'Gold',    '金': 'Gold',    '金黄': 'Golden Yellow',
+  '银色': 'Silver',  '银': 'Silver',
+  '浅蓝': 'Light Blue', '淡蓝': 'Light Blue', '天蓝': 'Sky Blue', '天蓝色': 'Sky Blue',
+  '深蓝': 'Dark Blue',  '藏青色': 'Navy Blue', '藏青': 'Navy Blue',
+  '深绿': 'Dark Green', '墨绿': 'Dark Green',
+  '咖啡': 'Coffee Brown', '咖啡色': 'Coffee Brown',
+  '荧光绿': 'Fluorescent Green', '翠绿': 'Emerald Green',
+  '豆绿': 'Pea Green',   '军绿': 'Olive Green',
+  '枣红': 'Maroon',      '玫红': 'Rose Red',   '玫瑰红': 'Rose Red',
+  '红咖啡': 'Burgundy',  '酒红': 'Wine Red',   '酒红色': 'Wine Red',
+  '卡其': 'Khaki',       '卡其色': 'Khaki',
+  '米白': 'Off White',   '米色': 'Beige',      '奶白': 'Cream',
+  '透明': 'Clear',       '彩色': 'Multicolor', '多色': 'Multicolor',
+  '玫瑰金': 'Rose Gold', '香槟': 'Champagne',  '香槟色': 'Champagne',
+  '宝蓝': 'Royal Blue',  '湖蓝': 'Lake Blue',  '孔雀蓝': 'Peacock Blue',
+  '橄榄绿': 'Olive',     '草绿': 'Grass Green',
+  '深红': 'Dark Red',    '暗红': 'Dark Red',
+  '浅灰': 'Light Gray',  '深灰': 'Dark Gray',  '银灰': 'Silver Gray',
+  '米黄': 'Cream Yellow','奶黄': 'Cream',
+  '裸色': 'Nude',        '肤色': 'Skin Color',
+  // Sizes
+  '均码': 'One Size', '免费尺寸': 'One Size', '通用': 'One Size', '均一码': 'One Size',
+  '小号': 'S',  '中号': 'M',  '大号': 'L',
+  '加大': 'XL', '加大号': 'XL', '超大号': 'XXL', '特大号': 'XXL',
+};
+
+/** Characters eBay does not allow inside variation values. */
+const VARIANT_ILLEGAL_CHARS = /[/\\()+*#@!%^&=<>{}[\]]/g;
+
 function cleanVariantValue(raw: string): string {
   if (!raw) return raw;
   let name = raw.trim();
 
+  // 1. Strip [English - Chinese] bracket patterns
   const bracketMatch = name.match(/^\[([^\]]+)\]/);
   if (bracketMatch) {
     name = bracketMatch[1].replace(/\s*-\s*/g, ' ').trim();
   } else {
+    // 2. Strip Chinese|English or English|Chinese pipe-separated combos
     const parts = name.split(/[丨|]/).map(s => s.trim()).filter(s => s.length > 0);
     if (parts.length >= 2) {
-      name = parts[1];
+      // Prefer the non-Chinese part
+      const enPart = parts.find(p => !containsChinese(p));
+      name = enPart ?? parts[1];
     }
   }
 
-  if (name.length > 50) name = name.substring(0, 50).trim();
-  return name || raw.substring(0, 50);
+  // 3. If still contains Chinese, look up in translation map
+  if (containsChinese(name)) {
+    const mapped = CHINESE_VALUE_MAP[name];
+    if (mapped) {
+      name = mapped;
+    } else {
+      // Strip Chinese chars and keep any remaining ASCII
+      const ascii = name.replace(/[\u4e00-\u9fff]/g, '').trim();
+      name = ascii.length > 0 ? ascii : 'Other';
+    }
+  }
+
+  // 4. Remove characters eBay rejects in variation values
+  name = name.replace(VARIANT_ILLEGAL_CHARS, ' ').replace(/\s{2,}/g, ' ').trim();
+
+  // 5. eBay max variation value length is 65 chars
+  if (name.length > 65) name = name.substring(0, 65).trim();
+  return name || 'Other';
 }
 
 // ─── Result type ──────────────────────────────────────────────────────────────
@@ -233,7 +300,7 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
 
         const childSku = `${baseSku}-${sku.id}`;
         const childPrice = calculatePriceUsd(sku.priceCny || prod.priceCny, en.priceUsd);
-        const relationDetails = buildRelationDetails(sku.variantValuesJson, variantMap);
+        const relationDetails = buildRelationDetails(sku.variantValuesJson, variantMap, catInfo.variationDimensions);
 
         // Skip duplicate variation combinations (same RelationshipDetails already seen)
         if (!relationDetails || seenRelDets.has(relationDetails)) continue;
@@ -257,8 +324,9 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         // Color and Size are declared in RelationshipDetails (VariationSpecifics).
         // Therefore they must NOT appear in *C:Color / *C:Size (ItemSpecifics) on variation rows.
         // Clear C:Color and C:Size on child rows; only track values for parent RelDet aggregation.
-        if (variantValues.Color) allColors.add(variantValues.Color);
-        if (variantValues.Size)  allSizes.add(variantValues.Size);
+        // Cap at 30 unique values per dimension (eBay hard limit).
+        if (variantValues.Color && allColors.size < 30) allColors.add(variantValues.Color);
+        if (variantValues.Size  && allSizes.size  < 30) allSizes.add(variantValues.Size);
         childRow[COL_IDX['*C:Color']] = ''; // cleared — color is in RelationshipDetails
         childRow[COL_IDX['*C:Size']]  = ''; // cleared — size is in RelationshipDetails
 
@@ -505,10 +573,14 @@ function buildVariantMap(
 function buildRelationDetails(
   variantValuesJson: Record<string, string>,
   variantMap: Map<string, Map<string, string>>,
+  allowedDimensions: string[], // from catInfo.variationDimensions
 ): string {
   // eBay only accepts 'Color' and 'Size' as variation dimensions in RelationshipDetails.
   // Priority: explicit Color key wins; if no Color key, use the first non-Size dim as Color.
   // Style, Model, etc. are item specifics — NOT variation dimensions on their own.
+  // allowedDimensions controls which dims we actually export (e.g. hats only allow Color).
+  const allowSize = allowedDimensions.some(d => d.toLowerCase() === 'size');
+
   let colorPart: string | null = null;    // from an explicit isColorKey() dimension
   let fallbackPart: string | null = null; // from first non-color, non-size dimension
   let sizePart: string | null = null;
@@ -516,9 +588,11 @@ function buildRelationDetails(
   for (const [zhKey, zhValue] of Object.entries(variantValuesJson)) {
     const enValue = variantMap.get(zhKey)?.get(zhValue) ?? zhValue;
     const cleaned = cleanVariantValue(enValue);
+    if (!cleaned || cleaned === 'Other') continue; // skip empty/untranslatable
 
     if (isSizeKey(zhKey)) {
-      if (!sizePart) sizePart = `Size=${cleaned}`;
+      // Only include Size if the category declares it as a variation dimension
+      if (allowSize && !sizePart) sizePart = `Size=${cleaned}`;
     } else if (isColorKey(zhKey)) {
       if (!colorPart) colorPart = `Color=${cleaned}`;
     } else {
