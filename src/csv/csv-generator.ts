@@ -276,15 +276,27 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         isParent: true,
       });
 
-      // Parent lists ALL values for each variation dimension, pipe-separated.
+      // ── Parent RelationshipDetails: defines the VariationSpecificsSet ────────
+      // eBay requires the parent to declare ALL variation dimensions and all their
+      // possible values in RelationshipDetails using this format:
+      //   "Color=Red;Blue;Green|Size=S;M;L"  (semicolons between values, pipes between dims)
+      // The child rows use:
+      //   "Color=Blue|Size=M"  (one value per dim, pipe between dims)
+      // Without this parent declaration, eBay returns error 21916587.
+      const parentRelDetParts: string[] = [];
+      if (allColors.size > 0) parentRelDetParts.push(`Color=${[...allColors].join(';')}`);
+      if (allSizes.size  > 0) parentRelDetParts.push(`Size=${[...allSizes].join(';')}`);
+      if (parentRelDetParts.length > 0) {
+        parentRow[COL_IDX['RelationshipDetails']] = parentRelDetParts.join('|');
+      }
+
+      // C:Color / C:Size on the parent row = pipe-separated list of ALL values (eBay display).
       // Style is NOT a variation dimension — parent's C:Style stays as the catInfo value.
-      // Parent's RelationshipDetails must be EMPTY (eBay rejects values there on parent rows).
       //
       // CRITICAL: buildRow() sets fallback *C:Color='Multicolor' and *C:Size='One Size'.
       // For variation parents, eBay treats any pipe-separated or single value in *C:Color/*C:Size
       // as variation dimensions — so we MUST clear dimensions that are not actual variation axes.
       // If allSizes is empty, children don't have Size= in RelationshipDetails → clear *C:Size.
-      // Same for Color (rare, but safe to be explicit).
       if (allColors.size > 0) {
         parentRow[COL_IDX['*C:Color']] = [...allColors].join('|');
       } else {
@@ -516,12 +528,15 @@ function buildRelationDetails(
   const parts: string[] = [];
   if (effectiveColor) parts.push(effectiveColor);
   if (sizePart) parts.push(sizePart);
-  return parts.join(';');
+  // eBay child rows use pipe "|" to separate multiple variation dimensions:
+  //   "Color=Blue|Size=M"  (matches eBay's Seller Hub bulk upload format)
+  return parts.join('|');
 }
 
 function parseRelationDetails(details: string): Record<string, string> {
   const result: Record<string, string> = {};
-  for (const part of details.split(';')) {
+  // Child rows use "|" as separator between dimensions ("Color=Blue|Size=M")
+  for (const part of details.split('|')) {
     const eq = part.indexOf('=');
     if (eq > 0) {
       result[part.substring(0, eq)] = part.substring(eq + 1);
