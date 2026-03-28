@@ -446,9 +446,10 @@ function buildRelationDetails(
   variantMap: Map<string, Map<string, string>>,
 ): string {
   // eBay only accepts 'Color' and 'Size' as variation dimensions in RelationshipDetails.
-  // Any dimension that is not a size key is treated as Color.
-  // Style, Model, etc. are item specifics — NOT variation dimensions.
-  let colorPart: string | null = null;
+  // Priority: explicit Color key wins; if no Color key, use the first non-Size dim as Color.
+  // Style, Model, etc. are item specifics — NOT variation dimensions on their own.
+  let colorPart: string | null = null;    // from an explicit isColorKey() dimension
+  let fallbackPart: string | null = null; // from first non-color, non-size dimension
   let sizePart: string | null = null;
 
   for (const [zhKey, zhValue] of Object.entries(variantValuesJson)) {
@@ -457,14 +458,18 @@ function buildRelationDetails(
 
     if (isSizeKey(zhKey)) {
       if (!sizePart) sizePart = `Size=${cleaned}`;
-    } else if (!colorPart) {
-      // Any non-size dimension (Color, Style, Model…) → map to Color
-      colorPart = `Color=${cleaned}`;
+    } else if (isColorKey(zhKey)) {
+      if (!colorPart) colorPart = `Color=${cleaned}`;
+    } else {
+      // Style, Model, etc. — saved as fallback only
+      if (!fallbackPart) fallbackPart = `Color=${cleaned}`;
     }
   }
 
+  // Use explicit color if found, else promote the fallback (Style/Model) to Color
+  const effectiveColor = colorPart ?? fallbackPart;
   const parts: string[] = [];
-  if (colorPart) parts.push(colorPart);
+  if (effectiveColor) parts.push(effectiveColor);
   if (sizePart) parts.push(sizePart);
   return parts.join(';');
 }
