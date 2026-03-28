@@ -281,7 +281,7 @@ function buildBaseRow(
 ): string[] {
   const row = emptyRow();
 
-  row[COL_IDX['Action']] = 'Add';
+  row[COL_IDX['Action(SiteID=US|Country=US|Currency=USD|Version=1193|CC=UTF-8)']] = 'Add';
   row[COL_IDX['CustomLabel']] = opts.sku;
   row[COL_IDX['Category']] = String(catInfo.ebayCategoryId);
   row[COL_IDX['Title']] = opts.title;

@@ -12,7 +12,7 @@
  */
 
 export const CSV_COLUMNS = [
-  'Action',                    // Add, Revise, Relist, End
+  'Action(SiteID=US|Country=US|Currency=USD|Version=1193|CC=UTF-8)', // Add, Revise, Relist, End
   'CustomLabel',               // SKU (our internal ID)
   'Category',                  // eBay leaf category ID
   'Title',                     // Max 80 chars
