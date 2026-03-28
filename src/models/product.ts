@@ -64,38 +64,38 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   'winter scarves': { ebayCategoryId: 45238, ebayCategoryName: 'Scarves & Wraps', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Scarf', Material: 'Acrylic', 'Country/Region of Manufacture': 'China' } },
 
   // ── Belts ──────────────────────────────────────────────────────────
-  'fashion belts': { ebayCategoryId: 2993, ebayCategoryName: 'Belts', conditionId: 1500, variationDimensions: ['Color', 'Size'], itemSpecifics: { Material: 'Faux Leather', 'Country/Region of Manufacture': 'China' } },
+  'fashion belts': { ebayCategoryId: 163553, ebayCategoryName: 'Belts', conditionId: 1500, variationDimensions: ['Color', 'Size'], itemSpecifics: { Type: 'Belt', Material: 'Faux Leather', 'Country/Region of Manufacture': 'China' } },
 
   // ── Gloves ─────────────────────────────────────────────────────────
-  'fashion gloves': { ebayCategoryId: 105559, ebayCategoryName: 'Gloves & Mittens', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+  'fashion gloves': { ebayCategoryId: 105559, ebayCategoryName: 'Gloves & Mittens', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Gloves', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
 
   // ── Suspenders & Braces ───────────────────────────────────────────
-  'SuspendersBracesPostureCor': { ebayCategoryId: 105387, ebayCategoryName: 'Suspenders', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Department: 'Unisex Adults', Material: 'Elastic', 'Country/Region of Manufacture': 'China' } },
+  'SuspendersBracesPostureCor': { ebayCategoryId: 105387, ebayCategoryName: 'Suspenders', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Suspenders', Department: 'Unisex Adults', Material: 'Elastic', 'Country/Region of Manufacture': 'China' } },
 
   // ── Ties & Tie Accessories ────────────────────────────────────────
   'Ties':              { ebayCategoryId: 15662, ebayCategoryName: 'Ties', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Necktie', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
   'TieSet':            { ebayCategoryId: 15662, ebayCategoryName: 'Ties', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Set', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
-  'TieChains':         { ebayCategoryId: 10298, ebayCategoryName: 'Tie Clasps & Tacks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
-  'TieClip':           { ebayCategoryId: 10298, ebayCategoryName: 'Tie Clasps & Tacks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
-  'TieBucklesCufflinks': { ebayCategoryId: 137843, ebayCategoryName: 'Cufflinks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
-  'TieClipsCufflinks': { ebayCategoryId: 137843, ebayCategoryName: 'Cufflinks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'TieChains':         { ebayCategoryId: 10298, ebayCategoryName: 'Tie Clasps & Tacks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Tie Chain', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'TieClip':           { ebayCategoryId: 10298, ebayCategoryName: 'Tie Clasps & Tacks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Tie Clip', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'TieBucklesCufflinks': { ebayCategoryId: 137843, ebayCategoryName: 'Cufflinks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Cufflinks', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'TieClipsCufflinks': { ebayCategoryId: 137843, ebayCategoryName: 'Cufflinks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Cufflinks', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
 
   // ── Handkerchiefs & Pocket Squares ────────────────────────────────
-  'Handkerchiefs': { ebayCategoryId: 167902, ebayCategoryName: 'Handkerchiefs & Pocket Squares', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
-  'PocketSquares': { ebayCategoryId: 167902, ebayCategoryName: 'Handkerchiefs & Pocket Squares', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+  'Handkerchiefs': { ebayCategoryId: 167902, ebayCategoryName: 'Handkerchiefs & Pocket Squares', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Handkerchief', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+  'PocketSquares': { ebayCategoryId: 167902, ebayCategoryName: 'Handkerchiefs & Pocket Squares', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Pocket Square', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
 
   // ── Sashes ────────────────────────────────────────────────────────
   'Sashes':        { ebayCategoryId: 86207, ebayCategoryName: 'Belts & Sashes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sash', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
   'sun scarves':   { ebayCategoryId: 45238, ebayCategoryName: 'Scarves & Wraps', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Scarf', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
 
   // ── Cummerbunds ───────────────────────────────────────────────────
-  'Cummerbunds': { ebayCategoryId: 105509, ebayCategoryName: 'Formal Ties & Cummerbunds', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+  'Cummerbunds': { ebayCategoryId: 105509, ebayCategoryName: 'Formal Ties & Cummerbunds', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Cummerbund', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
 
   // ── Collar Stays ──────────────────────────────────────────────────
-  'CollarStays': { ebayCategoryId: 184594, ebayCategoryName: 'Collar Stays', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Metal', 'Country/Region of Manufacture': 'China' } },
+  'CollarStays': { ebayCategoryId: 184594, ebayCategoryName: 'Collar Stays', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Collar Stay', Material: 'Metal', 'Country/Region of Manufacture': 'China' } },
 
   // ── Leg Warmers / Knee Sleeves ─────────────────────────────────────
-  'KneeSleeveLegWarmer': { ebayCategoryId: 163587, ebayCategoryName: 'Leg Warmers', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Material: 'Acrylic', 'Country/Region of Manufacture': 'China' } },
+  'KneeSleeveLegWarmer': { ebayCategoryId: 163587, ebayCategoryName: 'Leg Warmers', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Leg Warmer', Material: 'Acrylic', 'Country/Region of Manufacture': 'China' } },
 
   // ── Sneakers ──────────────────────────────────────────────────────
   'sneakers': { ebayCategoryId: 15709, ebayCategoryName: 'Athletic Shoes', conditionId: 1500, variationDimensions: ['Color', 'US Shoe Size'], itemSpecifics: { Department: 'Unisex', Style: 'Sneakers', 'Country/Region of Manufacture': 'China' } },

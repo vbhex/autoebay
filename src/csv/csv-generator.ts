@@ -49,6 +49,30 @@ function calculatePriceUsd(priceCny: number, priceUsdFromDb: number): number {
   return roundPrice(price);
 }
 
+// ─── Title sanitizer ─────────────────────────────────────────────────────────
+// eBay error 240: prohibited medical/health terms in listings.
+// Strip or replace terms that trigger eBay's improper-words filter.
+const PROHIBITED_TITLE_PATTERNS: Array<[RegExp, string]> = [
+  [/\bmyopia\b/gi, ''],
+  [/\bshort[\s-]?sighted(?:ness)?\b/gi, ''],
+  [/\bnear[\s-]?sighted(?:ness)?\b/gi, ''],
+  [/\bpresbyopi[ac]\b/gi, ''],
+  [/\bastigmat(?:ism|ic)\b/gi, ''],
+  [/\bhyperopi[ac]\b/gi, ''],
+  [/\bfarsighted(?:ness)?\b/gi, ''],
+  [/\blongsighted(?:ness)?\b/gi, ''],
+  [/\b(?:for|treat(?:ing)?|correct(?:ing)?)\s+(?:vision|eyesight)\b/gi, ''],
+  [/\s{2,}/g, ' '],   // collapse double spaces left by removals
+];
+
+function sanitizeTitle(raw: string): string {
+  let t = raw;
+  for (const [pattern, replacement] of PROHIBITED_TITLE_PATTERNS) {
+    t = t.replace(pattern, replacement);
+  }
+  return t.trim();
+}
+
 // ─── Description builder ──────────────────────────────────────────────────────
 
 function buildDescription(
@@ -179,7 +203,7 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
     const en = prod.en;
     const basePrice = calculatePriceUsd(prod.priceCny, en.priceUsd);
     const description = buildDescription(en.titleEn, en.specificationsEn);
-    const title = truncateToBytes(en.titleEn, 80);
+    const title = truncateToBytes(sanitizeTitle(en.titleEn), 80);
     const baseSku = `1688-${prod.id1688}`;
 
     categoriesUsed.add(prod.category);
@@ -215,14 +239,21 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         childRow[COL_IDX['Relationship']] = 'Variation';
         childRow[COL_IDX['RelationshipDetails']] = relationDetails;
 
-        // Only Color and Size are valid eBay variation dimensions
+        // Only Color and Size are valid eBay variation dimensions.
+        // CRITICAL: buildRow() sets fallback *C:Color='Multicolor' and *C:Size='One Size'.
+        // For variation child rows, eBay treats any value in *C:Color/*C:Size as a variation axis.
+        // We MUST clear the dimensions that are not actual variation axes for this specific SKU.
         if (variantValues.Color) {
           childRow[COL_IDX['*C:Color']] = variantValues.Color;
           allColors.add(variantValues.Color);
+        } else {
+          childRow[COL_IDX['*C:Color']] = ''; // clear fallback 'Multicolor'
         }
         if (variantValues.Size) {
           childRow[COL_IDX['*C:Size']] = variantValues.Size;
           allSizes.add(variantValues.Size);
+        } else {
+          childRow[COL_IDX['*C:Size']] = ''; // clear fallback 'One Size' — not a variation axis
         }
         // Style is NOT a variation dimension — it stays as a fixed item specific from catInfo
 
@@ -248,8 +279,22 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
       // Parent lists ALL values for each variation dimension, pipe-separated.
       // Style is NOT a variation dimension — parent's C:Style stays as the catInfo value.
       // Parent's RelationshipDetails must be EMPTY (eBay rejects values there on parent rows).
-      if (allColors.size > 0) parentRow[COL_IDX['*C:Color']] = [...allColors].join('|');
-      if (allSizes.size  > 0) parentRow[COL_IDX['*C:Size']]  = [...allSizes].join('|');
+      //
+      // CRITICAL: buildRow() sets fallback *C:Color='Multicolor' and *C:Size='One Size'.
+      // For variation parents, eBay treats any pipe-separated or single value in *C:Color/*C:Size
+      // as variation dimensions — so we MUST clear dimensions that are not actual variation axes.
+      // If allSizes is empty, children don't have Size= in RelationshipDetails → clear *C:Size.
+      // Same for Color (rare, but safe to be explicit).
+      if (allColors.size > 0) {
+        parentRow[COL_IDX['*C:Color']] = [...allColors].join('|');
+      } else {
+        parentRow[COL_IDX['*C:Color']] = ''; // clear the fallback 'Multicolor'
+      }
+      if (allSizes.size > 0) {
+        parentRow[COL_IDX['*C:Size']] = [...allSizes].join('|');
+      } else {
+        parentRow[COL_IDX['*C:Size']] = ''; // clear the fallback 'One Size' — not a variation axis
+      }
 
       dataRows.push(parentRow);
       totalDataRows++;
