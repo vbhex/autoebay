@@ -239,23 +239,14 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         childRow[COL_IDX['Relationship']] = 'Variation';
         childRow[COL_IDX['RelationshipDetails']] = relationDetails;
 
-        // Only Color and Size are valid eBay variation dimensions.
-        // CRITICAL: buildRow() sets fallback *C:Color='Multicolor' and *C:Size='One Size'.
-        // For variation child rows, eBay treats any value in *C:Color/*C:Size as a variation axis.
-        // We MUST clear the dimensions that are not actual variation axes for this specific SKU.
-        if (variantValues.Color) {
-          childRow[COL_IDX['*C:Color']] = variantValues.Color;
-          allColors.add(variantValues.Color);
-        } else {
-          childRow[COL_IDX['*C:Color']] = ''; // clear fallback 'Multicolor'
-        }
-        if (variantValues.Size) {
-          childRow[COL_IDX['*C:Size']] = variantValues.Size;
-          allSizes.add(variantValues.Size);
-        } else {
-          childRow[COL_IDX['*C:Size']] = ''; // clear fallback 'One Size' — not a variation axis
-        }
-        // Style is NOT a variation dimension — it stays as a fixed item specific from catInfo
+        // eBay rule (error 87): VariationSpecifics and ItemSpecifics MUST be different fields.
+        // Color and Size are declared in RelationshipDetails (VariationSpecifics).
+        // Therefore they must NOT appear in *C:Color / *C:Size (ItemSpecifics) on variation rows.
+        // Clear C:Color and C:Size on child rows; only track values for parent RelDet aggregation.
+        if (variantValues.Color) allColors.add(variantValues.Color);
+        if (variantValues.Size)  allSizes.add(variantValues.Size);
+        childRow[COL_IDX['*C:Color']] = ''; // cleared — color is in RelationshipDetails
+        childRow[COL_IDX['*C:Size']]  = ''; // cleared — size is in RelationshipDetails
 
         if (sku.imageUrl) {
           childRow[COL_IDX['PicURL']] = sku.imageUrl;
@@ -290,23 +281,12 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         parentRow[COL_IDX['RelationshipDetails']] = parentRelDetParts.join('|');
       }
 
-      // C:Color / C:Size on the parent row = pipe-separated list of ALL values (eBay display).
-      // Style is NOT a variation dimension — parent's C:Style stays as the catInfo value.
-      //
-      // CRITICAL: buildRow() sets fallback *C:Color='Multicolor' and *C:Size='One Size'.
-      // For variation parents, eBay treats any pipe-separated or single value in *C:Color/*C:Size
-      // as variation dimensions — so we MUST clear dimensions that are not actual variation axes.
-      // If allSizes is empty, children don't have Size= in RelationshipDetails → clear *C:Size.
-      if (allColors.size > 0) {
-        parentRow[COL_IDX['*C:Color']] = [...allColors].join('|');
-      } else {
-        parentRow[COL_IDX['*C:Color']] = ''; // clear the fallback 'Multicolor'
-      }
-      if (allSizes.size > 0) {
-        parentRow[COL_IDX['*C:Size']] = [...allSizes].join('|');
-      } else {
-        parentRow[COL_IDX['*C:Size']] = ''; // clear the fallback 'One Size' — not a variation axis
-      }
+      // eBay rule (error 87): VariationSpecifics and ItemSpecifics MUST be different fields.
+      // Color and Size are declared in RelationshipDetails (VariationSpecifics).
+      // They must NOT appear in *C:Color / *C:Size (ItemSpecifics) on variation rows.
+      // Clear both on the parent; the variation info is fully captured in RelationshipDetails.
+      parentRow[COL_IDX['*C:Color']] = ''; // cleared — all colors declared in RelationshipDetails
+      parentRow[COL_IDX['*C:Size']]  = ''; // cleared — all sizes declared in RelationshipDetails
 
       dataRows.push(parentRow);
       totalDataRows++;
