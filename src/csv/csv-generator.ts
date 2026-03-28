@@ -194,7 +194,6 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
       const childRows: string[][] = [];
       const allColors = new Set<string>();
       const allSizes  = new Set<string>();
-      const allStyles = new Set<string>();
 
       for (const sku of prod.skus!) {
         if (!sku.available) continue;
@@ -216,7 +215,7 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         childRow[COL_IDX['Relationship']] = 'Variation';
         childRow[COL_IDX['RelationshipDetails']] = relationDetails;
 
-        // Item specifics for variation dimensions
+        // Only Color and Size are valid eBay variation dimensions
         if (variantValues.Color) {
           childRow[COL_IDX['*C:Color']] = variantValues.Color;
           allColors.add(variantValues.Color);
@@ -225,10 +224,7 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
           childRow[COL_IDX['*C:Size']] = variantValues.Size;
           allSizes.add(variantValues.Size);
         }
-        if (variantValues.Style) {
-          childRow[COL_IDX['*C:Style']] = variantValues.Style;
-          allStyles.add(variantValues.Style);
-        }
+        // Style is NOT a variation dimension — it stays as a fixed item specific from catInfo
 
         if (sku.imageUrl) {
           childRow[COL_IDX['PicURL']] = sku.imageUrl;
@@ -249,17 +245,11 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         isParent: true,
       });
 
-      // Parent lists ALL values for each variation dimension, pipe-separated
+      // Parent lists ALL values for each variation dimension, pipe-separated.
+      // Style is NOT a variation dimension — parent's C:Style stays as the catInfo value.
+      // Parent's RelationshipDetails must be EMPTY (eBay rejects values there on parent rows).
       if (allColors.size > 0) parentRow[COL_IDX['*C:Color']] = [...allColors].join('|');
       if (allSizes.size  > 0) parentRow[COL_IDX['*C:Size']]  = [...allSizes].join('|');
-      if (allStyles.size > 0) parentRow[COL_IDX['*C:Style']] = [...allStyles].join('|');
-
-      // Build VariationSpecificsSet for parent row (required by eBay when business policies enabled)
-      const varDims: string[] = [];
-      if (allColors.size > 0) varDims.push(`Color=${[...allColors].join('|')}`);
-      if (allSizes.size  > 0) varDims.push(`Size=${[...allSizes].join('|')}`);
-      if (allStyles.size > 0) varDims.push(`Style=${[...allStyles].join('|')}`);
-      if (varDims.length > 0) parentRow[COL_IDX['RelationshipDetails']] = varDims.join(';');
 
       dataRows.push(parentRow);
       totalDataRows++;
@@ -455,24 +445,27 @@ function buildRelationDetails(
   variantValuesJson: Record<string, string>,
   variantMap: Map<string, Map<string, string>>,
 ): string {
-  const parts: string[] = [];
+  // eBay only accepts 'Color' and 'Size' as variation dimensions in RelationshipDetails.
+  // Any dimension that is not a size key is treated as Color.
+  // Style, Model, etc. are item specifics — NOT variation dimensions.
+  let colorPart: string | null = null;
+  let sizePart: string | null = null;
 
   for (const [zhKey, zhValue] of Object.entries(variantValuesJson)) {
     const enValue = variantMap.get(zhKey)?.get(zhValue) ?? zhValue;
     const cleaned = cleanVariantValue(enValue);
 
-    let dimName: string;
-    if (isColorKey(zhKey)) {
-      dimName = 'Color';
-    } else if (isSizeKey(zhKey)) {
-      dimName = 'Size';
-    } else {
-      dimName = 'Style';
+    if (isSizeKey(zhKey)) {
+      if (!sizePart) sizePart = `Size=${cleaned}`;
+    } else if (!colorPart) {
+      // Any non-size dimension (Color, Style, Model…) → map to Color
+      colorPart = `Color=${cleaned}`;
     }
-
-    parts.push(`${dimName}=${cleaned}`);
   }
 
+  const parts: string[] = [];
+  if (colorPart) parts.push(colorPart);
+  if (sizePart) parts.push(sizePart);
   return parts.join(';');
 }
 
