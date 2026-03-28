@@ -68,7 +68,8 @@ function buildDescription(
   lines.push('<li>30-day return policy</li>');
   lines.push('</ul>');
 
-  return lines.join('\n');
+  // eBay File Exchange requires single-line HTML — no literal newlines in CSV cells
+  return lines.join('');
 }
 
 function escapeHTML(str: string): string {
@@ -291,10 +292,27 @@ function buildBaseRow(
   row[COL_IDX['Currency']] = 'USD';
   row[COL_IDX['Location']] = config.listing.shipsFrom;
   row[COL_IDX['Country']] = 'CN';
+  row[COL_IDX['DispatchTimeMax']] = String(config.listing.dispatchDays);
+
+  // Shipping — direct fields (no business policies)
+  row[COL_IDX['ShippingType']] = 'Flat';
+  row[COL_IDX['ShippingService-1:Option']] = 'EconomyShippingFromOutsideUS';
+  row[COL_IDX['ShippingService-1:Cost']] = String(config.shipping.cost);
+  row[COL_IDX['ShippingService-1:FreeShipping']] = config.shipping.cost === 0 ? 'y' : 'n';
+  row[COL_IDX['IntlShippingService-1:Option']] = 'StandardInternational';
+  row[COL_IDX['IntlShippingService-1:Cost']] = String(config.shipping.cost);
+  row[COL_IDX['IntlShippingService-1:Locations']] = 'Worldwide';
+
+  // Returns
+  row[COL_IDX['ReturnsAcceptedOption']] = 'ReturnsAccepted';
+  row[COL_IDX['ReturnsWithinOption']] = 'Days30';
+  row[COL_IDX['RefundOption']] = 'MoneyBack';
+  row[COL_IDX['ShippingCostPaidByOption']] = 'Buyer';
+
+  // Item specifics
   row[COL_IDX['Brand']] = config.listing.brandName;
   row[COL_IDX['C:MPN']] = 'Does Not Apply';
   row[COL_IDX['C:Country/Region of Manufacture']] = 'China';
-  row[COL_IDX['DispatchTimeMax']] = String(config.listing.dispatchDays);
 
   if (!opts.isParent) {
     row[COL_IDX['StartPrice']] = String(opts.price);
