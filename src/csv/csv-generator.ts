@@ -254,6 +254,13 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
       if (allSizes.size  > 0) parentRow[COL_IDX['*C:Size']]  = [...allSizes].join('|');
       if (allStyles.size > 0) parentRow[COL_IDX['*C:Style']] = [...allStyles].join('|');
 
+      // Build VariationSpecificsSet for parent row (required by eBay when business policies enabled)
+      const varDims: string[] = [];
+      if (allColors.size > 0) varDims.push(`Color=${[...allColors].join('|')}`);
+      if (allSizes.size  > 0) varDims.push(`Size=${[...allSizes].join('|')}`);
+      if (allStyles.size > 0) varDims.push(`Style=${[...allStyles].join('|')}`);
+      if (varDims.length > 0) parentRow[COL_IDX['RelationshipDetails']] = varDims.join(';');
+
       dataRows.push(parentRow);
       totalDataRows++;
       for (const cr of childRows) { dataRows.push(cr); totalDataRows++; }

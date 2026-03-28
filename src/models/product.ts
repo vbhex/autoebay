@@ -24,7 +24,7 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   'fashion earrings':   { ebayCategoryId: 50647,  ebayCategoryName: 'Fashion Earrings', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Drop/Dangle', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
   'fashion bracelets':  { ebayCategoryId: 261987, ebayCategoryName: 'Fashion Bracelets & Charms', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Bangle', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
   'fashion necklaces':  { ebayCategoryId: 155101, ebayCategoryName: 'Fashion Necklaces & Pendants', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Pendant', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
-  'fashion rings':      { ebayCategoryId: 67681,  ebayCategoryName: 'Fashion Rings', conditionId: 1500, variationDimensions: ['Color', 'Ring Size'], itemSpecifics: { 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'fashion rings':      { ebayCategoryId: 67681,  ebayCategoryName: 'Fashion Rings', conditionId: 1500, variationDimensions: ['Color', 'Ring Size'], itemSpecifics: { Type: 'Ring', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
   'fashion anklets':    { ebayCategoryId: 261987, ebayCategoryName: 'Fashion Bracelets & Charms', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Anklet', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
 
   // ── Sunglasses & Eyewear ──────────────────────────────────────────
@@ -34,10 +34,10 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   'reading glasses':      { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color', 'Lens Strength'], itemSpecifics: { Type: 'Reading Glasses', Department: 'Unisex Adults', Style: 'Fashion', 'Frame Material': 'Plastic', 'Country/Region of Manufacture': 'China' } },
 
   // ── Hats & Caps ────────────────────────────────────────────────────
-  'bucket hats':    { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Style: 'Bucket Hat', Department: 'Unisex Adults', Material: 'Cotton', 'Country/Region of Manufacture': 'China' } },
-  'baseball caps':  { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Style: 'Baseball Cap', Department: 'Unisex Adults', Material: 'Cotton', 'Country/Region of Manufacture': 'China' } },
-  'beanies':        { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Style: 'Beanie', Department: 'Unisex Adults', Material: 'Acrylic', 'Country/Region of Manufacture': 'China' } },
-  'cowboy hats':    { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Style: 'Cowboy Hat', Department: 'Unisex Adults', 'Country/Region of Manufacture': 'China' } },
+  'bucket hats':    { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Bucket Hat', Department: 'Unisex Adults', Material: 'Cotton', 'Country/Region of Manufacture': 'China' } },
+  'baseball caps':  { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Baseball Cap', Department: 'Unisex Adults', Material: 'Cotton', 'Country/Region of Manufacture': 'China' } },
+  'beanies':        { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Beanie', Department: 'Unisex Adults', Material: 'Acrylic', 'Country/Region of Manufacture': 'China' } },
+  'cowboy hats':    { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Cowboy Hat', Department: 'Unisex Adults', 'Country/Region of Manufacture': 'China' } },
 
   // ── Bags & Wallets ─────────────────────────────────────────────────
   'waist packs':        { ebayCategoryId: 169285, ebayCategoryName: 'Backpacks, Bags & Briefcases', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Waist Bag/Fanny Pack', Material: 'Nylon', 'Country/Region of Manufacture': 'China' } },
