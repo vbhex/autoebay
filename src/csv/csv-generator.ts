@@ -418,6 +418,16 @@ function buildRow(
     row[COL_IDX['C:Material']] = catInfo.itemSpecifics.Material;
   }
 
+  // Generic pass-through: any extra itemSpecifics keys that have a matching C: column
+  // (e.g. 'US Shoe Size', 'US Shoe Size (Men\'s)', 'Base Metal', etc.)
+  for (const [key, val] of Object.entries(catInfo.itemSpecifics)) {
+    if (['Department', 'Type', 'Style', 'Material', 'Country/Region of Manufacture'].includes(key)) continue;
+    const colKey = `C:${key}` as string;
+    if (COL_IDX[colKey] !== undefined && val) {
+      row[COL_IDX[colKey]] = String(val);
+    }
+  }
+
   // Try to extract Material / Pattern from product specs if not already set
   if (prod.en.specificationsEn && prod.en.specificationsEn.length > 0) {
     for (const spec of prod.en.specificationsEn) {
