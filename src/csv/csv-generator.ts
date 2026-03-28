@@ -1,10 +1,14 @@
 /**
  * eBay CSV generator for Seller Hub Reports bulk upload.
  *
- * Generates CSV files ready for upload via:
- *   Seller Hub → Reports → Uploads → Upload from file
+ * Output format matches the official "fx_category_template_EBAY_US" template:
+ *   Line 0:  Info,Version=1.0.0,Template=fx_category_template_EBAY_US
+ *   Line 1:  96-column header
+ *   Lines 2-4: empty rows
+ *   Line 5:  Info,>>> help link
+ *   Lines 6+: data rows
  *
- * Supports both standalone listings and variation listings (Color × Size).
+ * File encoding: UTF-8 with BOM (0xEF 0xBB 0xBF), CRLF line endings.
  */
 
 import fs from 'fs';
@@ -12,11 +16,16 @@ import path from 'path';
 import { config } from '../config';
 import { createChildLogger } from '../utils/logger';
 import { ensureDirectoryExists, isBannedBrand, truncateToBytes, roundPrice, escapeCSV } from '../utils/helpers';
-import { CSV_COLUMNS, COL_IDX, emptyRow, getHeaderRow } from './column-mapping';
+import {
+  COLUMN_COUNT, COL_IDX, emptyRow, getHeaderRow,
+  INFO_LINE, HELP_LINE,
+} from './column-mapping';
 import { ExportProduct, EBAY_CATEGORY_MAP, EbayCategoryInfo } from '../models/product';
 
 const logger = createChildLogger('csv-generator');
 
+const CRLF = '\r\n';
+const UTF8_BOM = '\uFEFF'; // JS string BOM — written as 0xEF 0xBB 0xBF in UTF-8
 const CNY_TO_USD = 7.2;
 
 // ─── Pricing ──────────────────────────────────────────────────────────────────
@@ -44,7 +53,7 @@ function calculatePriceUsd(priceCny: number, priceUsdFromDb: number): number {
 
 function buildDescription(
   title: string,
-  specs: Array<{ name: string; value: string }>
+  specs: Array<{ name: string; value: string }>,
 ): string {
   const lines: string[] = [];
   lines.push(`<h2>${escapeHTML(title)}</h2>`);
@@ -64,11 +73,11 @@ function buildDescription(
   lines.push('<ul>');
   lines.push('<li>Brand new, high quality</li>');
   lines.push('<li>Ships from China via economy international shipping</li>');
-  lines.push(`<li>Estimated delivery: 15-30 business days</li>`);
+  lines.push('<li>Estimated delivery: 15-30 business days</li>');
   lines.push('<li>30-day return policy</li>');
   lines.push('</ul>');
 
-  // eBay File Exchange requires single-line HTML — no literal newlines in CSV cells
+  // eBay requires single-line HTML — no literal newlines in CSV cells
   return lines.join('');
 }
 
@@ -80,7 +89,7 @@ function escapeHTML(str: string): string {
     .replace(/"/g, '&quot;');
 }
 
-// ─── Color helpers ────────────────────────────────────────────────────────────
+// ─── Variant helpers ──────────────────────────────────────────────────────────
 
 const COLOR_WORDS = ['color', 'colour', '颜色', 'clr'];
 const SIZE_WORDS = ['size', '尺寸', '大小', '型号', 'sz'];
@@ -125,6 +134,7 @@ export interface CSVResult {
 // ─── Main generator ───────────────────────────────────────────────────────────
 
 export async function generateCSV(products: ExportProduct[]): Promise<CSVResult | null> {
+  // ── Brand filter ────────────────────────────────────────────────────────────
   const filtered: ExportProduct[] = [];
 
   for (const prod of products) {
@@ -145,9 +155,8 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
   const filename = `ebay-export-${dateStr}.csv`;
   const filePath = path.join(config.paths.output, filename);
 
-  const rows: string[][] = [];
-  rows.push(getHeaderRow());
-
+  // ── Build data rows ─────────────────────────────────────────────────────────
+  const dataRows: string[][] = [];
   let totalDataRows = 0;
   const categoriesUsed = new Set<string>();
 
@@ -175,22 +184,24 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
 
     categoriesUsed.add(prod.category);
 
-    const hasVariants = prod.skus && prod.skus.length > 1 && prod.variantStructure && prod.variantStructure.length > 0;
+    const hasVariants =
+      prod.skus && prod.skus.length > 1 &&
+      prod.variantStructure && prod.variantStructure.length > 0;
 
     if (hasVariants) {
-      // Parent row
-      const parentRow = buildBaseRow(prod, catInfo, {
+      // ── Parent row (no price/qty — set on children) ──────────────────────
+      const parentRow = buildRow(prod, catInfo, {
         sku: baseSku,
         title,
         description,
-        price: basePrice,
+        price: 0,
         galleryImages,
         isParent: true,
       });
-      rows.push(parentRow);
+      dataRows.push(parentRow);
       totalDataRows++;
 
-      // Child rows
+      // ── Child rows ───────────────────────────────────────────────────────
       const variantMap = buildVariantMap(prod);
 
       for (const sku of prod.skus!) {
@@ -199,35 +210,35 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         const childSku = `${baseSku}-${sku.id}`;
         const childPrice = calculatePriceUsd(sku.priceCny || prod.priceCny, en.priceUsd);
         const relationDetails = buildRelationDetails(sku.variantValuesJson, variantMap);
+        const variantValues = parseRelationDetails(relationDetails);
 
-        const childRow = buildBaseRow(prod, catInfo, {
+        const childRow = buildRow(prod, catInfo, {
           sku: childSku,
           title,
-          description: '',
+          description: '',         // description only on parent
           price: childPrice,
-          galleryImages: [],
+          galleryImages: [],       // images only on parent
           isParent: false,
         });
 
         childRow[COL_IDX['Relationship']] = 'Variation';
         childRow[COL_IDX['RelationshipDetails']] = relationDetails;
 
-        // Populate C:Color, C:Size, C:Style columns from variant values
-        const variantValues = parseRelationDetails(relationDetails);
-        if (variantValues.Color) childRow[COL_IDX['C:Color']] = variantValues.Color;
-        if (variantValues.Size) childRow[COL_IDX['C:Size']] = variantValues.Size;
-        if (variantValues.Style) childRow[COL_IDX['C:Style']] = variantValues.Style;
+        // Item specifics for variation dimensions
+        if (variantValues.Color) childRow[COL_IDX['*C:Color']] = variantValues.Color;
+        if (variantValues.Size) childRow[COL_IDX['*C:Size']] = variantValues.Size;
+        if (variantValues.Style) childRow[COL_IDX['*C:Style']] = variantValues.Style;
 
         if (sku.imageUrl) {
           childRow[COL_IDX['PicURL']] = sku.imageUrl;
         }
 
-        rows.push(childRow);
+        dataRows.push(childRow);
         totalDataRows++;
       }
     } else {
-      // Standalone row
-      const row = buildBaseRow(prod, catInfo, {
+      // ── Standalone listing (no variations) ───────────────────────────────
+      const row = buildRow(prod, catInfo, {
         sku: baseSku,
         title,
         description,
@@ -235,7 +246,7 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         galleryImages,
         isParent: false,
       });
-      rows.push(row);
+      dataRows.push(row);
       totalDataRows++;
     }
   }
@@ -245,7 +256,31 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
     return null;
   }
 
-  const csvContent = rows.map(row => row.map(escapeCSV).join(',')).join('\n') + '\n';
+  // ── Assemble the file ───────────────────────────────────────────────────────
+  const parts: string[] = [];
+
+  // Line 0: metadata (pad to 96 cols)
+  parts.push(padTo96(INFO_LINE));
+
+  // Line 1: 96-column header
+  parts.push(getHeaderRow().map(escapeCSV).join(','));
+
+  // Lines 2-4: three empty rows (96 commas each)
+  const emptyLine = emptyRow().join(',');
+  parts.push(emptyLine);
+  parts.push(emptyLine);
+  parts.push(emptyLine);
+
+  // Line 5: help link (pad to 96 cols)
+  parts.push(padTo96(HELP_LINE));
+
+  // Data rows
+  for (const row of dataRows) {
+    parts.push(row.map(escapeCSV).join(','));
+  }
+
+  // Join with CRLF and write with UTF-8 BOM
+  const csvContent = UTF8_BOM + parts.join(CRLF) + CRLF;
   fs.writeFileSync(filePath, csvContent, 'utf-8');
 
   logger.info('eBay CSV written', {
@@ -265,7 +300,7 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
 
 // ─── Row builders ─────────────────────────────────────────────────────────────
 
-interface BaseRowOpts {
+interface RowOpts {
   sku: string;
   title: string;
   description: string;
@@ -274,64 +309,96 @@ interface BaseRowOpts {
   isParent: boolean;
 }
 
-function buildBaseRow(
+function buildRow(
   prod: ExportProduct,
   catInfo: EbayCategoryInfo,
-  opts: BaseRowOpts
+  opts: RowOpts,
 ): string[] {
-  const row = emptyRow();
+  const row = emptyRow(); // 96 empty strings
 
-  row[COL_IDX['Action(SiteID=US|Country=US|Currency=USD|Version=1193|CC=UTF-8)']] = 'Add';
+  // ── Core fields ─────────────────────────────────────────────────────────────
+  row[COL_IDX['*Action(SiteID=US|Country=US|Currency=USD|Version=1193|CC=UTF-8)']] = 'Add';
   row[COL_IDX['CustomLabel']] = opts.sku;
-  row[COL_IDX['Category']] = String(catInfo.ebayCategoryId);
-  row[COL_IDX['Title']] = opts.title;
-  row[COL_IDX['ConditionID']] = String(catInfo.conditionId);
-  row[COL_IDX['Description']] = opts.description;
-  row[COL_IDX['Format']] = 'FixedPrice';
-  row[COL_IDX['Duration']] = 'GTC';
-  row[COL_IDX['Currency']] = 'USD';
-  row[COL_IDX['Location']] = config.listing.shipsFrom;
-  row[COL_IDX['Country']] = 'CN';
-  row[COL_IDX['DispatchTimeMax']] = String(config.listing.dispatchDays);
+  row[COL_IDX['*Category']] = String(catInfo.ebayCategoryId);
+  row[COL_IDX['*Title']] = opts.title;
+  row[COL_IDX['*ConditionID']] = String(catInfo.conditionId);
+  row[COL_IDX['*Format']] = 'FixedPrice';
+  row[COL_IDX['*Duration']] = 'GTC';
+  row[COL_IDX['*Location']] = config.listing.shipsFrom;
+  row[COL_IDX['*DispatchTimeMax']] = String(config.listing.dispatchDays);
 
-  // Shipping — direct fields (no business policies)
+  // ── Item specifics (required) ───────────────────────────────────────────────
+  row[COL_IDX['*C:Brand']] = config.listing.brandName;
+  row[COL_IDX['C:MPN']] = 'Does Not Apply';
+  row[COL_IDX['C:Country of Origin']] = 'China';
+
+  // Department — from catInfo.itemSpecifics or default "Unisex"
+  row[COL_IDX['*C:Department']] = catInfo.itemSpecifics.Department || 'Unisex';
+
+  // Type — from catInfo.itemSpecifics (required column)
+  if (catInfo.itemSpecifics.Type) {
+    row[COL_IDX['*C:Type']] = catInfo.itemSpecifics.Type;
+  }
+
+  // Style — from catInfo.itemSpecifics (optional, but column is required so leave empty if absent)
+  if (catInfo.itemSpecifics.Style) {
+    row[COL_IDX['*C:Style']] = catInfo.itemSpecifics.Style;
+  }
+
+  // Material, Pattern — extract from catInfo.itemSpecifics or product specs
+  if (catInfo.itemSpecifics.Material) {
+    row[COL_IDX['C:Material']] = catInfo.itemSpecifics.Material;
+  }
+
+  // Try to extract Material / Pattern from product specs if not already set
+  if (prod.en.specificationsEn && prod.en.specificationsEn.length > 0) {
+    for (const spec of prod.en.specificationsEn) {
+      const name = spec.name.toLowerCase();
+      if (!row[COL_IDX['C:Material']] && (name.includes('material') || name.includes('fabric'))) {
+        row[COL_IDX['C:Material']] = spec.value.substring(0, 65);
+      }
+      if (!row[COL_IDX['C:Pattern']] && name.includes('pattern')) {
+        row[COL_IDX['C:Pattern']] = spec.value.substring(0, 65);
+      }
+    }
+  }
+
+  // ── Shipping ────────────────────────────────────────────────────────────────
   row[COL_IDX['ShippingType']] = 'Flat';
   row[COL_IDX['ShippingService-1:Option']] = 'EconomyShippingFromOutsideUS';
   row[COL_IDX['ShippingService-1:Cost']] = String(config.shipping.cost);
-  row[COL_IDX['ShippingService-1:FreeShipping']] = config.shipping.cost === 0 ? 'y' : 'n';
-  row[COL_IDX['IntlShippingService-1:Option']] = 'StandardInternational';
-  row[COL_IDX['IntlShippingService-1:Cost']] = String(config.shipping.cost);
-  row[COL_IDX['IntlShippingService-1:Locations']] = 'Worldwide';
 
-  // Returns
-  row[COL_IDX['ReturnsAcceptedOption']] = 'ReturnsAccepted';
+  // ── Returns ─────────────────────────────────────────────────────────────────
+  row[COL_IDX['*ReturnsAcceptedOption']] = 'ReturnsAccepted';
   row[COL_IDX['ReturnsWithinOption']] = 'Days30';
   row[COL_IDX['RefundOption']] = 'MoneyBack';
   row[COL_IDX['ShippingCostPaidByOption']] = 'Buyer';
 
-  // Item specifics
-  row[COL_IDX['Brand']] = config.listing.brandName;
-  row[COL_IDX['C:MPN']] = 'Does Not Apply';
-  row[COL_IDX['C:Country/Region of Manufacture']] = 'China';
-
-  if (!opts.isParent) {
-    row[COL_IDX['StartPrice']] = String(opts.price);
-    row[COL_IDX['Quantity']] = String(config.listing.defaultStock);
+  // ── Description ─────────────────────────────────────────────────────────────
+  if (opts.description) {
+    row[COL_IDX['*Description']] = opts.description;
   }
 
+  // ── Price & Quantity (NOT set on parent variation rows) ─────────────────────
+  if (!opts.isParent) {
+    row[COL_IDX['*StartPrice']] = String(opts.price);
+    row[COL_IDX['*Quantity']] = String(config.listing.defaultStock);
+  }
+
+  // ── Images ──────────────────────────────────────────────────────────────────
   if (opts.galleryImages.length > 0) {
-    row[COL_IDX['PicURL']] = opts.galleryImages[0].imageUrl;
-    if (opts.galleryImages.length > 1) {
-      const additionalImages = opts.galleryImages.slice(1, 12).map(img => img.imageUrl);
-      row[COL_IDX['*PicURL']] = additionalImages.join('|');
-    }
+    // PicURL supports pipe-separated URLs for multiple images
+    const allUrls = opts.galleryImages.slice(0, 12).map(img => img.imageUrl);
+    row[COL_IDX['PicURL']] = allUrls.join('|');
   }
 
   return row;
 }
 
+// ─── Variant helpers ──────────────────────────────────────────────────────────
+
 function buildVariantMap(
-  prod: ExportProduct
+  prod: ExportProduct,
 ): Map<string, Map<string, string>> {
   const map = new Map<string, Map<string, string>>();
   if (!prod.variantStructure) return map;
@@ -351,20 +418,9 @@ function buildVariantMap(
   return map;
 }
 
-function parseRelationDetails(details: string): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const part of details.split(';')) {
-    const eq = part.indexOf('=');
-    if (eq > 0) {
-      result[part.substring(0, eq)] = part.substring(eq + 1);
-    }
-  }
-  return result;
-}
-
 function buildRelationDetails(
   variantValuesJson: Record<string, string>,
-  variantMap: Map<string, Map<string, string>>
+  variantMap: Map<string, Map<string, string>>,
 ): string {
   const parts: string[] = [];
 
@@ -385,4 +441,27 @@ function buildRelationDetails(
   }
 
   return parts.join(';');
+}
+
+function parseRelationDetails(details: string): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const part of details.split(';')) {
+    const eq = part.indexOf('=');
+    if (eq > 0) {
+      result[part.substring(0, eq)] = part.substring(eq + 1);
+    }
+  }
+  return result;
+}
+
+// ─── Utility ──────────────────────────────────────────────────────────────────
+
+/**
+ * Pad a short line (like Info metadata) to 96 comma-separated columns
+ * so every line in the file has the same column count.
+ */
+function padTo96(line: string): string {
+  const count = (line.match(/,/g) || []).length + 1; // current column count
+  if (count >= COLUMN_COUNT) return line;
+  return line + ','.repeat(COLUMN_COUNT - count);
 }

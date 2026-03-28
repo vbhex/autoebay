@@ -1,78 +1,137 @@
 /**
- * eBay Seller Hub Reports CSV column definitions.
+ * eBay Seller Hub Reports CSV column definitions — matches the official
+ * "fx_category_template_EBAY_US" template downloaded from Seller Hub.
  *
- * When uploading via Seller Hub Reports → Uploads → "Create new listings",
- * the CSV uses the "Action" column to determine what to do with each row.
+ * 96 columns, exact order.  Columns prefixed with * are required by eBay.
  *
- * For File Exchange / Seller Hub Reports upload format:
  * https://pages.ebay.com/sh/reports/help/create-listings-bulk/
- *
- * NOTE: We use direct shipping/return fields (NOT business policy names)
- * because business policies are not enabled on this account.
  */
 
 export const CSV_COLUMNS = [
-  'Action(SiteID=US|Country=US|Currency=USD|Version=1193|CC=UTF-8)', // Add, Revise, Relist, End
-  'CustomLabel',               // SKU (our internal ID)
-  'Category',                  // eBay leaf category ID
-  'Title',                     // Max 80 chars
-  'ConditionID',               // 1000=New with tags, 1500=New without tags
-  'Description',               // HTML allowed (single-line, no literal newlines)
-  'PicURL',                    // Main image URL
-  'Quantity',                  // Available stock
-  'StartPrice',                // Listing price in USD
-  'Format',                    // FixedPrice or Auction
-  'Duration',                  // GTC = Good 'Til Cancelled
-  'DispatchTimeMax',           // Business days to ship (3)
-  'Location',                  // Ship-from location
-  'Country',                   // Ship-from country code (CN)
-  'Currency',                  // USD
-  // Shipping
-  'ShippingType',              // Flat
-  'ShippingService-1:Option',  // Economy shipping service name
-  'ShippingService-1:Cost',    // Shipping cost
-  'ShippingService-1:FreeShipping', // y = free shipping
-  // International shipping
-  'IntlShippingService-1:Option',   // International economy
-  'IntlShippingService-1:Cost',     // International shipping cost
-  'IntlShippingService-1:Locations', // Ship-to locations (Worldwide)
-  // Returns
-  'ReturnsAcceptedOption',     // ReturnsAccepted or ReturnsNotAccepted
-  'ReturnsWithinOption',       // Days30, Days60
-  'RefundOption',              // MoneyBack, MoneyBackOrExchange
-  'ShippingCostPaidByOption',  // Buyer or Seller
-  // Item specifics
-  'Brand',                     // Item specific: Brand
-  'C:MPN',                     // Manufacturer Part Number ('Does Not Apply' for unbranded)
-  'C:Country/Region of Manufacture', // Item specific
-  // Variation columns
-  'Relationship',              // Variation
-  'RelationshipDetails',       // Color=Red;Size=M
-  // Variation specifics columns (must match names in RelationshipDetails)
-  'C:Color',                   // Variation dimension: Color
-  'C:Size',                    // Variation dimension: Size
-  'C:Style',                   // Variation dimension: Style
-  // Image columns for variations
-  '*PicURL',                   // Additional image URLs (pipe-separated)
+  /* 0  */ '*Action(SiteID=US|Country=US|Currency=USD|Version=1193|CC=UTF-8)',
+  /* 1  */ 'CustomLabel',
+  /* 2  */ '*Category',
+  /* 3  */ 'StoreCategory',
+  /* 4  */ '*Title',
+  /* 5  */ 'Subtitle',
+  /* 6  */ 'Relationship',
+  /* 7  */ 'RelationshipDetails',
+  /* 8  */ 'ScheduleTime',
+  /* 9  */ '*ConditionID',
+  /* 10 */ '*C:Brand',
+  /* 11 */ '*C:Style',
+  /* 12 */ '*C:Size',
+  /* 13 */ '*C:Color',
+  /* 14 */ '*C:Department',
+  /* 15 */ 'C:Theme',
+  /* 16 */ 'C:Features',
+  /* 17 */ 'C:Pattern',
+  /* 18 */ 'C:Material',
+  /* 19 */ 'C:Country of Origin',
+  /* 20 */ 'C:Fabric Type',
+  /* 21 */ 'C:Character',
+  /* 22 */ 'C:Occasion',
+  /* 23 */ 'C:Vintage',
+  /* 24 */ 'C:Season',
+  /* 25 */ 'C:Handmade',
+  /* 26 */ 'C:Personalize',
+  /* 27 */ 'C:Signed',
+  /* 28 */ 'C:Model',
+  /* 29 */ 'C:California Prop 65 Warning',
+  /* 30 */ 'C:MPN',
+  /* 31 */ 'C:Personalization Instructions',
+  /* 32 */ 'C:Unit Quantity',
+  /* 33 */ 'C:Unit Type',
+  /* 34 */ '*C:Type',
+  /* 35 */ 'C:Item Width',
+  /* 36 */ 'C:Accents',
+  /* 37 */ 'C:Item Length',
+  /* 38 */ 'C:Attachment Type',
+  /* 39 */ 'C:Number of Pieces',
+  /* 40 */ 'C:Year Manufactured',
+  /* 41 */ 'PicURL',
+  /* 42 */ 'GalleryType',
+  /* 43 */ 'VideoID',
+  /* 44 */ '*Description',
+  /* 45 */ '*Format',
+  /* 46 */ '*Duration',
+  /* 47 */ '*StartPrice',
+  /* 48 */ 'BuyItNowPrice',
+  /* 49 */ 'BestOfferEnabled',
+  /* 50 */ 'BestOfferAutoAcceptPrice',
+  /* 51 */ 'MinimumBestOfferPrice',
+  /* 52 */ '*Quantity',
+  /* 53 */ 'ImmediatePayRequired',
+  /* 54 */ '*Location',
+  /* 55 */ 'ShippingType',
+  /* 56 */ 'ShippingService-1:Option',
+  /* 57 */ 'ShippingService-1:Cost',
+  /* 58 */ 'ShippingService-2:Option',
+  /* 59 */ 'ShippingService-2:Cost',
+  /* 60 */ '*DispatchTimeMax',
+  /* 61 */ 'PromotionalShippingDiscount',
+  /* 62 */ 'ShippingDiscountProfileID',
+  /* 63 */ '*ReturnsAcceptedOption',
+  /* 64 */ 'ReturnsWithinOption',
+  /* 65 */ 'RefundOption',
+  /* 66 */ 'ShippingCostPaidByOption',
+  /* 67 */ 'AdditionalDetails',
+  /* 68 */ 'ShippingProfileName',
+  /* 69 */ 'ReturnProfileName',
+  /* 70 */ 'PaymentProfileName',
+  // 71-95: Product Safety / Manufacturer / Responsible Person (leave empty)
+  /* 71 */ 'Product Safety Pictograms',
+  /* 72 */ 'Product Safety Statements',
+  /* 73 */ 'Product Safety Component',
+  /* 74 */ 'Regulatory Document Ids',
+  /* 75 */ 'Manufacturer Name',
+  /* 76 */ 'Manufacturer AddressLine1',
+  /* 77 */ 'Manufacturer AddressLine2',
+  /* 78 */ 'Manufacturer City',
+  /* 79 */ 'Manufacturer Country',
+  /* 80 */ 'Manufacturer PostalCode',
+  /* 81 */ 'Manufacturer StateOrProvince',
+  /* 82 */ 'Manufacturer Phone',
+  /* 83 */ 'Manufacturer Email',
+  /* 84 */ 'Manufacturer ContactURL',
+  /* 85 */ 'Responsible Person 1',
+  /* 86 */ 'Responsible Person 1 Type',
+  /* 87 */ 'Responsible Person 1 AddressLine1',
+  /* 88 */ 'Responsible Person 1 AddressLine2',
+  /* 89 */ 'Responsible Person 1 City',
+  /* 90 */ 'Responsible Person 1 Country',
+  /* 91 */ 'Responsible Person 1 PostalCode',
+  /* 92 */ 'Responsible Person 1 StateOrProvince',
+  /* 93 */ 'Responsible Person 1 Phone',
+  /* 94 */ 'Responsible Person 1 Email',
+  /* 95 */ 'Responsible Person 1 ContactURL',
 ] as const;
 
 export type CSVColumn = typeof CSV_COLUMNS[number];
 
+/** Fast index lookup: column name → position (0-95) */
 export const COL_IDX: Record<string, number> = {};
 CSV_COLUMNS.forEach((col, i) => { COL_IDX[col] = i; });
 
-export const COLUMN_COUNT = CSV_COLUMNS.length;
+export const COLUMN_COUNT = CSV_COLUMNS.length; // 96
 
-/**
- * eBay File Exchange header row for creating fixed-price listings.
- */
+// ─── Metadata lines (must appear before data) ─────────────────────────────────
+
+/** Line 0: version + template identifier — eBay checks this on upload. */
+export const INFO_LINE = 'Info,Version=1.0.0,Template=fx_category_template_EBAY_US';
+
+/** Line 5: help link line that appears after the 3 empty rows. */
+export const HELP_LINE =
+  'Info,>>> Get more details on how to complete listings and discover how to customise your listings with advanced features: https://pages.ebay.com/sh/reports/help/create-listings-bulk/#_nq6onyvjkyg';
+
+// ─── Row helpers ───────────────────────────────────────────────────────────────
+
+/** Return the 96-column header row. */
 export function getHeaderRow(): string[] {
   return [...CSV_COLUMNS];
 }
 
-/**
- * Build a CSV row with all columns initialized to empty strings.
- */
+/** Return a row with all 96 columns set to empty string. */
 export function emptyRow(): string[] {
   return Array(COLUMN_COUNT).fill('');
 }
