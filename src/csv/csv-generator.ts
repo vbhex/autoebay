@@ -383,16 +383,12 @@ function buildRow(
     }
   }
 
-  // ── Shipping ────────────────────────────────────────────────────────────────
-  row[COL_IDX['ShippingType']] = 'Flat';
-  row[COL_IDX['ShippingService-1:Option']] = 'EconomyShippingFromOutsideUS';
-  row[COL_IDX['ShippingService-1:Cost']] = String(config.shipping.cost);
-
-  // ── Returns ─────────────────────────────────────────────────────────────────
-  row[COL_IDX['*ReturnsAcceptedOption']] = 'ReturnsAccepted';
-  row[COL_IDX['ReturnsWithinOption']] = 'Days30';
-  row[COL_IDX['RefundOption']] = 'MoneyBack';
-  row[COL_IDX['ShippingCostPaidByOption']] = 'Buyer';
+  // ── Business Policy Profiles (replaces inline shipping/return/payment fields) ─
+  // When Business Policies are enabled on the seller account, eBay requires profile
+  // names instead of inline fields. Inline ReturnsWithinOption etc. are rejected.
+  row[COL_IDX['ShippingProfileName']] = config.businessPolicies.shippingProfileName;
+  row[COL_IDX['ReturnProfileName']] = config.businessPolicies.returnProfileName;
+  row[COL_IDX['PaymentProfileName']] = config.businessPolicies.paymentProfileName;
 
   // ── Description ─────────────────────────────────────────────────────────────
   if (opts.description) {

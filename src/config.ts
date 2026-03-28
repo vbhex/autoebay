@@ -37,6 +37,11 @@ export interface Config {
     service: string;
     cost: number;
   };
+  businessPolicies: {
+    shippingProfileName: string;
+    returnProfileName: string;
+    paymentProfileName: string;
+  };
   paths: {
     output: string;
     logs: string;
@@ -98,6 +103,11 @@ export function loadConfig(): Config {
     shipping: {
       service: getEnvVar('SHIPPING_SERVICE', 'Economy International Shipping'),
       cost: getEnvNumber('SHIPPING_COST', 0),
+    },
+    businessPolicies: {
+      shippingProfileName: getEnvVar('EBAY_SHIPPING_PROFILE', 'Free Shipping Via China Post2'),
+      returnProfileName: getEnvVar('EBAY_RETURN_PROFILE', 'Return policy'),
+      paymentProfileName: getEnvVar('EBAY_PAYMENT_PROFILE', 'eBay Managed Payments (276048238018)'),
     },
     paths: {
       output: path.join(projectRoot, 'output'),
