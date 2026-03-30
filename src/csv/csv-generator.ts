@@ -70,9 +70,29 @@ const PROHIBITED_TITLE_PATTERNS: Array<[RegExp, string]> = [
   [/\bcross[\s-]?border\b/gi, ''],
   [/\banti[\s-]?theft\b/gi, ''],
   [/\bwholesale\b/gi, ''],
-  [/\bdropship(?:ping)?\b/gi, ''],
+  [/\bdrop[\s-]?ship(?:ping)?\b/gi, ''],
   [/\bfactory[\s-]?direct\b/gi, ''],
+  [/\bmanufacturer'?s?\s+(?:direct|new|ready[\s-]?made|supply)\b/gi, ''],
   [/\bnew\s+arrival\b/gi, ''],
+  [/\bforeign\s+trade\b/gi, ''],
+  [/\bfor\s+export\b/gi, ''],
+  [/\badvertising\b/gi, ''],
+  [/\bcustomize[d]?\b/gi, ''],
+  // Scraped 1688 UI text (must be removed entirely)
+  [/^Find Similar(?:\s+Items?)?\s*/i, ''],
+  [/Find Similar(?:\s+Items?)?\s*/gi, ''],
+  [/¥\s*[\d.]+[~×\-]?[\d.]*\s*(?:[\d~×\-]+\s*¥\s*[\d.]+\s*)*/g, ''],
+  // Decorative brackets / special chars that eBay rejects
+  [/[【】\[\]]/g, ''],
+  // Red sole = implicit Louboutin trademark reference
+  [/\bred[\s-]sol(?:e|ed)\b/gi, ''],
+  // Competitor brand references
+  [/\bamazon\b/gi, ''],
+  [/\byeezy\b/gi, ''],
+  [/\bair\s*jordan\b/gi, ''],
+  [/\baj\s*\d{1,3}\b/gi, ''],
+  [/\btiktok\b/gi, ''],
+  [/\bxinjiang\b/gi, ''],
   // Remove trailing/leading commas and spaces left by removals
   [/,\s*,/g, ','],
   [/^[,\s]+|[,\s]+$/g, ''],
@@ -96,12 +116,17 @@ function buildDescription(
   const lines: string[] = [];
   lines.push(`<h2>${escapeHTML(sanitizeTitle(title))}</h2>`);
 
+  // Spec names to skip in description (declared elsewhere or cause policy issues)
+  const SKIP_SPEC_NAMES = new Set(['brand', 'Brand', 'product category', 'Product Category', 'Product Catalog']);
+
   if (specs.length > 0) {
     lines.push('<h3>Specifications</h3>');
     lines.push('<ul>');
     for (const spec of specs) {
       if (spec.name && spec.value) {
-        // Sanitize both spec name and value to remove prohibited medical terms
+        const nameLower = spec.name.toLowerCase().trim();
+        if (SKIP_SPEC_NAMES.has(spec.name) || nameLower === 'brand' || nameLower === 'product category' || nameLower === 'product catalog') continue;
+        // Sanitize both spec name and value to remove prohibited terms
         const cleanName  = sanitizeTitle(spec.name);
         const cleanValue = sanitizeTitle(spec.value);
         if (cleanName && cleanValue) {
@@ -341,15 +366,13 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         childRow[COL_IDX['Relationship']] = 'Variation';
         childRow[COL_IDX['RelationshipDetails']] = relationDetails;
 
-        // eBay rule (error 87): VariationSpecifics and ItemSpecifics MUST be different fields.
-        // Color and Size are declared in RelationshipDetails (VariationSpecifics).
-        // Therefore they must NOT appear in *C:Color / *C:Size (ItemSpecifics) on variation rows.
-        // Clear C:Color and C:Size on child rows; only track values for parent RelDet aggregation.
+        // eBay rule: VariationSpecifics and ItemSpecifics MUST be different fields.
+        // Only clear C:Color / C:Size if they are actually variation dimensions for this category.
         // Cap at 30 unique values per dimension (eBay hard limit).
         if (variantValues.Color && allColors.size < 30) allColors.add(variantValues.Color);
         if (variantValues.Size  && allSizes.size  < 30) allSizes.add(variantValues.Size);
-        childRow[COL_IDX['*C:Color']] = ''; // cleared — color is in RelationshipDetails
-        childRow[COL_IDX['*C:Size']]  = ''; // cleared — size is in RelationshipDetails
+        if (catInfo.variationDimensions.includes('Color')) childRow[COL_IDX['*C:Color']] = ''; // in RelDet
+        if (catInfo.variationDimensions.includes('Size'))  childRow[COL_IDX['*C:Size']]  = ''; // in RelDet
 
         if (sku.imageUrl) {
           childRow[COL_IDX['PicURL']] = sku.imageUrl;
@@ -384,12 +407,11 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
         parentRow[COL_IDX['RelationshipDetails']] = parentRelDetParts.join('|');
       }
 
-      // eBay rule (error 87): VariationSpecifics and ItemSpecifics MUST be different fields.
-      // Color and Size are declared in RelationshipDetails (VariationSpecifics).
-      // They must NOT appear in *C:Color / *C:Size (ItemSpecifics) on variation rows.
-      // Clear both on the parent; the variation info is fully captured in RelationshipDetails.
-      parentRow[COL_IDX['*C:Color']] = ''; // cleared — all colors declared in RelationshipDetails
-      parentRow[COL_IDX['*C:Size']]  = ''; // cleared — all sizes declared in RelationshipDetails
+      // eBay rule: VariationSpecifics and ItemSpecifics MUST be different fields.
+      // Only clear C:Color / C:Size on parent if they are actual variation dimensions.
+      // Non-variation dimensions keep their item-specific fallback values (e.g. 'One Size').
+      if (catInfo.variationDimensions.includes('Color')) parentRow[COL_IDX['*C:Color']] = '';
+      if (catInfo.variationDimensions.includes('Size'))  parentRow[COL_IDX['*C:Size']]  = '';
 
       dataRows.push(parentRow);
       totalDataRows++;
