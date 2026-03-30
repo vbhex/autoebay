@@ -65,9 +65,14 @@ const PROHIBITED_TITLE_PATTERNS: Array<[RegExp, string]> = [
   [/\b(?:for|treat(?:ing)?|correct(?:ing)?)\s+(?:vision|eyesight)\b/gi, ''],
   [/\banti[\s-]?radiation\b/gi, ''],
   [/\banti[\s-]?blue[\s-]?light\b/gi, 'blue light'],
-  // Marketing superlatives prohibited by eBay policy
+  // Marketing superlatives / policy violations
   [/\b(?:hot|best|top|number[\s-]?one)[\s-]?sell(?:ing)?\b/gi, ''],
   [/\bcross[\s-]?border\b/gi, ''],
+  [/\banti[\s-]?theft\b/gi, ''],
+  [/\bwholesale\b/gi, ''],
+  [/\bdropship(?:ping)?\b/gi, ''],
+  [/\bfactory[\s-]?direct\b/gi, ''],
+  [/\bnew\s+arrival\b/gi, ''],
   // Remove trailing/leading commas and spaces left by removals
   [/,\s*,/g, ','],
   [/^[,\s]+|[,\s]+$/g, ''],

@@ -117,6 +117,7 @@ export const CSV_COLUMNS = [
   /* 104 */ 'C:Display',
   /* 105 */ 'C:Lens Strength',
   /* 106 */ 'C:Ring Size',
+  /* 107 */ 'C:Upper Material',
 ] as const;
 
 export type CSVColumn = typeof CSV_COLUMNS[number];
@@ -125,7 +126,7 @@ export type CSVColumn = typeof CSV_COLUMNS[number];
 export const COL_IDX: Record<string, number> = {};
 CSV_COLUMNS.forEach((col, i) => { COL_IDX[col] = i; });
 
-export const COLUMN_COUNT = CSV_COLUMNS.length; // 107
+export const COLUMN_COUNT = CSV_COLUMNS.length; // 108
 
 // ─── Metadata lines (must appear before data) ─────────────────────────────────
 

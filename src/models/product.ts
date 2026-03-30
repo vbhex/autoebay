@@ -54,10 +54,10 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   'optical frames': { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Eyeglasses', Department: 'Unisex Adults', 'Frame Color': 'Assorted', Style: 'Fashion', 'Frame Material': 'Metal', 'Lens Technology': 'Standard', 'Country/Region of Manufacture': 'China' } },
 
   // ── Women's Shoes ────────────────────────────────────────────────
-  'womens fashion shoes': { ebayCategoryId: 45333, ebayCategoryName: 'Women\'s Flats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Flats', Department: 'Women', 'US Shoe Size': '7', 'Country/Region of Manufacture': 'China' } },
+  'womens fashion shoes': { ebayCategoryId: 45333, ebayCategoryName: 'Women\'s Flats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Flats', Department: 'Women', 'US Shoe Size': '7', 'Upper Material': 'Synthetic', 'Country/Region of Manufacture': 'China' } },
 
   // ── Men's Shoes ──────────────────────────────────────────────────
-  'mens casual shoes': { ebayCategoryId: 24087, ebayCategoryName: 'Men\'s Casual Shoes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Casual Shoes', Department: 'Men', Style: 'Casual Shoes', 'US Shoe Size': '9', 'Country/Region of Manufacture': 'China' } },
+  'mens casual shoes': { ebayCategoryId: 24087, ebayCategoryName: 'Men\'s Casual Shoes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Casual Shoes', Department: 'Men', Style: 'Casual Shoes', 'US Shoe Size': '9', 'Upper Material': 'Synthetic', 'Country/Region of Manufacture': 'China' } },
 
   // ── Scarves ────────────────────────────────────────────────────────
   'silk scarves':   { ebayCategoryId: 45238, ebayCategoryName: 'Scarves & Wraps', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Scarf', Material: 'Silk', 'Country/Region of Manufacture': 'China' } },
@@ -98,7 +98,7 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   'KneeSleeveLegWarmer': { ebayCategoryId: 163587, ebayCategoryName: 'Leg Warmers', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Leg Warmer', Material: 'Acrylic', 'Country/Region of Manufacture': 'China' } },
 
   // ── Sneakers ──────────────────────────────────────────────────────
-  'sneakers': { ebayCategoryId: 15709, ebayCategoryName: 'Athletic Shoes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Athletic', Department: 'Unisex', Style: 'Sneakers', 'US Shoe Size': '9', 'Country/Region of Manufacture': 'China' } },
+  'sneakers': { ebayCategoryId: 15709, ebayCategoryName: 'Athletic Shoes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Athletic', Department: 'Unisex', Style: 'Sneakers', 'US Shoe Size': '9', 'Upper Material': 'Synthetic', 'Country/Region of Manufacture': 'China' } },
 };
 
 export const EBAY_CATEGORIES = Object.keys(EBAY_CATEGORY_MAP);
