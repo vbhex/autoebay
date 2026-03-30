@@ -22,49 +22,49 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
 
   // ── Fashion Jewelry ────────────────────────────────────────────────
   'fashion earrings':   { ebayCategoryId: 50647,  ebayCategoryName: 'Fashion Earrings', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Drop/Dangle', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
-  'fashion bracelets':  { ebayCategoryId: 261987, ebayCategoryName: 'Fashion Bracelets & Charms', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Bangle', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'fashion bracelets':  { ebayCategoryId: 50637, ebayCategoryName: 'Fashion Bracelets', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Bangle', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
   'fashion necklaces':  { ebayCategoryId: 155101, ebayCategoryName: 'Fashion Necklaces & Pendants', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Pendant', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
   'fashion rings':      { ebayCategoryId: 67681,  ebayCategoryName: 'Fashion Rings', conditionId: 1500, variationDimensions: ['Color', 'Ring Size'], itemSpecifics: { Type: 'Ring', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
-  'fashion anklets':    { ebayCategoryId: 261987, ebayCategoryName: 'Fashion Bracelets & Charms', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Anklet', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'fashion anklets':    { ebayCategoryId: 50637, ebayCategoryName: 'Fashion Bracelets', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Anklet', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
 
   // ── Sunglasses & Eyewear ──────────────────────────────────────────
-  'polarized sunglasses': { ebayCategoryId: 179247, ebayCategoryName: 'Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sunglasses', Department: 'Unisex Adults', 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', 'Country/Region of Manufacture': 'China' } },
-  'sports sunglasses':    { ebayCategoryId: 179247, ebayCategoryName: 'Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sunglasses', Department: 'Unisex Adults', 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', Style: 'Sport', 'Country/Region of Manufacture': 'China' } },
+  'polarized sunglasses': { ebayCategoryId: 155189, ebayCategoryName: 'Unisex Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sunglasses', Department: 'Unisex Adults', 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', 'Country/Region of Manufacture': 'China' } },
+  'sports sunglasses':    { ebayCategoryId: 155189, ebayCategoryName: 'Unisex Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sunglasses', Department: 'Unisex Adults', 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', Style: 'Sport', 'Country/Region of Manufacture': 'China' } },
   'blue light glasses':   { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Eyeglasses', Department: 'Unisex Adults', Style: 'Fashion', 'Frame Material': 'Plastic', 'Lens Technology': 'Blue Light Filter', 'Country/Region of Manufacture': 'China' } },
   'reading glasses':      { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color', 'Lens Strength'], itemSpecifics: { Type: 'Reading Glasses', Department: 'Unisex Adults', Style: 'Fashion', 'Frame Material': 'Plastic', 'Country/Region of Manufacture': 'China' } },
 
   // ── Hats & Caps ────────────────────────────────────────────────────
-  'bucket hats':    { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Bucket Hat', Department: 'Unisex Adults', Material: 'Cotton', 'Country/Region of Manufacture': 'China' } },
-  'baseball caps':  { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Baseball Cap', Department: 'Unisex Adults', Material: 'Cotton', 'Country/Region of Manufacture': 'China' } },
-  'beanies':        { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Beanie', Department: 'Unisex Adults', Material: 'Acrylic', 'Country/Region of Manufacture': 'China' } },
-  'cowboy hats':    { ebayCategoryId: 52382, ebayCategoryName: 'Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Cowboy Hat', Department: 'Unisex Adults', 'Country/Region of Manufacture': 'China' } },
+  'bucket hats':    { ebayCategoryId: 163543, ebayCategoryName: 'Unisex Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Bucket Hat', Department: 'Unisex Adults', Material: 'Cotton', 'Country/Region of Manufacture': 'China' } },
+  'baseball caps':  { ebayCategoryId: 163543, ebayCategoryName: 'Unisex Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Baseball Cap', Department: 'Unisex Adults', Material: 'Cotton', 'Country/Region of Manufacture': 'China' } },
+  'beanies':        { ebayCategoryId: 163543, ebayCategoryName: 'Unisex Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Beanie', Department: 'Unisex Adults', Material: 'Acrylic', 'Country/Region of Manufacture': 'China' } },
+  'cowboy hats':    { ebayCategoryId: 163543, ebayCategoryName: 'Unisex Hats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hat', Style: 'Cowboy Hat', Department: 'Unisex Adults', 'Country/Region of Manufacture': 'China' } },
 
   // ── Bags & Wallets ─────────────────────────────────────────────────
-  'waist packs':        { ebayCategoryId: 169285, ebayCategoryName: 'Backpacks, Bags & Briefcases', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Waist Bag/Fanny Pack', Material: 'Nylon', 'Country/Region of Manufacture': 'China' } },
-  'coin purses':        { ebayCategoryId: 169285, ebayCategoryName: 'Backpacks, Bags & Briefcases', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Coin Purse', Material: 'Faux Leather', 'Country/Region of Manufacture': 'China' } },
-  'fashion backpacks':  { ebayCategoryId: 169285, ebayCategoryName: 'Backpacks, Bags & Briefcases', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Backpack', Material: 'Nylon', 'Country/Region of Manufacture': 'China' } },
-  'fashion wallets':    { ebayCategoryId: 169285, ebayCategoryName: 'Backpacks, Bags & Briefcases', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Wallet', Material: 'Faux Leather', 'Country/Region of Manufacture': 'China' } },
+  'waist packs':        { ebayCategoryId: 163537, ebayCategoryName: 'Unisex Bags & Backpacks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Waist Bag/Fanny Pack', Material: 'Nylon', 'Country/Region of Manufacture': 'China' } },
+  'coin purses':        { ebayCategoryId: 163537, ebayCategoryName: 'Unisex Bags & Backpacks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Coin Purse', Material: 'Faux Leather', 'Country/Region of Manufacture': 'China' } },
+  'fashion backpacks':  { ebayCategoryId: 163537, ebayCategoryName: 'Unisex Bags & Backpacks', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Backpack', Material: 'Nylon', 'Country/Region of Manufacture': 'China' } },
+  'fashion wallets':    { ebayCategoryId: 169283, ebayCategoryName: 'Unisex Wallets', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Wallet', Material: 'Faux Leather', 'Country/Region of Manufacture': 'China' } },
 
   // ── Hair Accessories ───────────────────────────────────────────────
-  'hair claws':           { ebayCategoryId: 261786, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Claw', Material: 'Plastic', 'Country/Region of Manufacture': 'China' } },
-  'hair pins':            { ebayCategoryId: 261786, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Pin', Material: 'Metal', 'Country/Region of Manufacture': 'China' } },
-  'hair accessories set': { ebayCategoryId: 261786, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Set', Material: 'Mixed', 'Country/Region of Manufacture': 'China' } },
+  'hair claws':           { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Claw', Material: 'Plastic', 'Country/Region of Manufacture': 'China' } },
+  'hair pins':            { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Pin', Material: 'Metal', 'Country/Region of Manufacture': 'China' } },
+  'hair accessories set': { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Set', Material: 'Mixed', 'Country/Region of Manufacture': 'China' } },
 
   // ── Eyeglass Frames ──────────────────────────────────────────────
   'optical frames': { ebayCategoryId: 180957, ebayCategoryName: 'Eyeglass Frames', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Eyeglasses', Department: 'Unisex Adults', Style: 'Fashion', 'Frame Material': 'Metal', 'Lens Technology': 'Standard', 'Country/Region of Manufacture': 'China' } },
 
   // ── Women's Shoes ────────────────────────────────────────────────
-  'womens fashion shoes': { ebayCategoryId: 55793, ebayCategoryName: 'Women\'s Shoes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Flats', Department: 'Women', 'US Shoe Size': 'See Description', 'Country/Region of Manufacture': 'China' } },
+  'womens fashion shoes': { ebayCategoryId: 45333, ebayCategoryName: 'Women\'s Flats', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Flats', Department: 'Women', 'US Shoe Size': 'See Description', 'Country/Region of Manufacture': 'China' } },
 
   // ── Men's Shoes ──────────────────────────────────────────────────
-  'mens casual shoes': { ebayCategoryId: 93427, ebayCategoryName: 'Men\'s Shoes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Casual Shoes', Department: 'Men', Style: 'Casual Shoes', 'US Shoe Size (Men\'s)': 'See Description', 'Country/Region of Manufacture': 'China' } },
+  'mens casual shoes': { ebayCategoryId: 24087, ebayCategoryName: 'Men\'s Casual Shoes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Casual Shoes', Department: 'Men', Style: 'Casual Shoes', 'US Shoe Size (Men\'s)': 'See Description', 'Country/Region of Manufacture': 'China' } },
 
   // ── Scarves ────────────────────────────────────────────────────────
   'silk scarves':   { ebayCategoryId: 45238, ebayCategoryName: 'Scarves & Wraps', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Scarf', Material: 'Silk', 'Country/Region of Manufacture': 'China' } },
   'winter scarves': { ebayCategoryId: 45238, ebayCategoryName: 'Scarves & Wraps', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Scarf', Material: 'Acrylic', 'Country/Region of Manufacture': 'China' } },
 
   // ── Belts ──────────────────────────────────────────────────────────
-  'fashion belts': { ebayCategoryId: 163553, ebayCategoryName: 'Belts', conditionId: 1500, variationDimensions: ['Color', 'Size'], itemSpecifics: { Type: 'Belt', Material: 'Faux Leather', 'Country/Region of Manufacture': 'China' } },
+  'fashion belts': { ebayCategoryId: 155187, ebayCategoryName: 'Unisex Belts', conditionId: 1500, variationDimensions: ['Color', 'Size'], itemSpecifics: { Type: 'Belt', Material: 'Faux Leather', 'Country/Region of Manufacture': 'China' } },
 
   // ── Gloves ─────────────────────────────────────────────────────────
   'fashion gloves': { ebayCategoryId: 105559, ebayCategoryName: 'Gloves & Mittens', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Gloves', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
@@ -85,7 +85,7 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   'PocketSquares': { ebayCategoryId: 167902, ebayCategoryName: 'Handkerchiefs & Pocket Squares', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Pocket Square', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
 
   // ── Sashes ────────────────────────────────────────────────────────
-  'Sashes':        { ebayCategoryId: 86207, ebayCategoryName: 'Belts & Sashes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sash', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
+  'Sashes':        { ebayCategoryId: 155187, ebayCategoryName: 'Unisex Belts', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sash', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
   'sun scarves':   { ebayCategoryId: 45238, ebayCategoryName: 'Scarves & Wraps', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Scarf', Material: 'Polyester', 'Country/Region of Manufacture': 'China' } },
 
   // ── Cummerbunds ───────────────────────────────────────────────────
