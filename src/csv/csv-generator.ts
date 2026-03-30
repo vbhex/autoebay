@@ -273,6 +273,13 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
     }
 
     const en = prod.en;
+
+    // Skip products with untranslated Chinese titles — eBay US rejects non-English content
+    if (containsChinese(en.titleEn)) {
+      logger.warn('Skipping product with Chinese title (needs translation)', { id1688: prod.id1688 });
+      continue;
+    }
+
     const basePrice = calculatePriceUsd(prod.priceCny, en.priceUsd);
     const description = buildDescription(en.titleEn, en.specificationsEn);
     const title = truncateToBytes(sanitizeTitle(en.titleEn), 80);
