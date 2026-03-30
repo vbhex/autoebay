@@ -96,52 +96,97 @@ async function loginToEbay(page: any, saveOnly: boolean): Promise<void> {
 }
 
 async function uploadCSV(page: any, csvPath: string): Promise<void> {
-  logger.info('Navigating to Seller Hub Reports...', { url: config.ebay.reportsUrl });
-  await page.goto(config.ebay.reportsUrl, { waitUntil: 'networkidle2', timeout: 60000 });
+  logger.info('Navigating to eBay reports/uploads page...');
+  await page.goto('https://www.ebay.com/sh/reports/uploads', { waitUntil: 'networkidle2', timeout: 60000 });
   await sleep(3000);
 
-  // Navigate to Uploads tab
+  await page.screenshot({ path: path.join(config.paths.logs, 'reports-page.png'), fullPage: true });
+
+  // Step 1: Wait for "Upload template" button to appear
+  logger.info('Waiting for Upload template button...');
   try {
-    const uploadsTab = await page.$('a[href*="uploads"], button:has-text("Uploads")');
-    if (uploadsTab) {
-      await uploadsTab.click();
-      await sleep(2000);
-    }
+    await page.waitForFunction(
+      () => Array.from(document.querySelectorAll('button')).some(b => b.textContent?.toLowerCase().includes('upload template')),
+      { timeout: 15000 }
+    );
   } catch {
-    logger.info('Trying direct uploads URL...');
-    await page.goto('https://www.ebay.com/sh/reports/uploads', { waitUntil: 'networkidle2', timeout: 60000 });
-    await sleep(3000);
+    logger.warn('Upload template button not found, proceeding anyway');
   }
 
-  // Screenshot current state
-  await page.screenshot({
-    path: path.join(config.paths.logs, 'reports-page.png'),
-    fullPage: true,
-  });
+  const allBtnTexts = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('button')).map(b => b.textContent?.trim()).filter(Boolean)
+  );
+  logger.info('Buttons on page:', { buttons: allBtnTexts });
 
-  // Look for upload button/input
-  const fileInput = await page.$('input[type="file"]');
-  if (fileInput) {
-    logger.info('Found file input, uploading CSV...');
-    await fileInput.uploadFile(csvPath);
+  // Step 2: Set up file chooser listener BEFORE clicking anything
+  // (Puppeteer requires the listener to be registered before the click that triggers the picker)
+  const fileChooserPromise = new Promise<any>(resolve => page.once('filechooser', resolve));
+  const fileChooserTimeout = sleep(25000).then(() => null);
+
+  // Step 3: Click "Upload template" to open the eBay dialog
+  const uploadClicked = await page.evaluate(() => {
+    const btns = Array.from(document.querySelectorAll('button'));
+    const btn = btns.find(b => b.textContent?.toLowerCase().includes('upload template'));
+    if (btn) { (btn as HTMLButtonElement).click(); return btn.textContent?.trim(); }
+    return null;
+  });
+  logger.info('Clicked Upload template:', { text: uploadClicked });
+
+  // Step 4: Wait for the "Upload File" dialog to appear with the "Choose file" button
+  await sleep(1500);
+  try {
+    await page.waitForFunction(
+      () => Array.from(document.querySelectorAll('button')).some(b => b.textContent?.toLowerCase().includes('choose file')),
+      { timeout: 10000 }
+    );
+    logger.info('Upload File dialog is open with Choose file button');
+  } catch {
+    logger.warn('Choose file button not found in dialog');
+  }
+
+  // Step 5: Click "Choose file" button to open the native file picker
+  // This triggers the filechooser event that Puppeteer can intercept
+  const chooseClicked = await page.evaluate(() => {
+    const btns = Array.from(document.querySelectorAll('button'));
+    const btn = btns.find(b => b.textContent?.toLowerCase().includes('choose file'));
+    if (btn) { (btn as HTMLButtonElement).click(); return btn.textContent?.trim(); }
+    // Fallback: click the file input directly
+    const inp = document.getElementById('file-input') as HTMLInputElement;
+    if (inp) { inp.click(); return 'clicked file-input directly'; }
+    return null;
+  });
+  logger.info('Clicked Choose file:', { text: chooseClicked });
+
+  // Step 6: Intercept the file chooser and provide the CSV path
+  const fileChooser = await Promise.race([fileChooserPromise, fileChooserTimeout]);
+
+  if (fileChooser) {
+    logger.info('File chooser intercepted — accepting CSV...');
+    await fileChooser.accept([csvPath]);
+    logger.info('File set via chooser');
     await sleep(3000);
 
-    // Look for submit/upload button
-    const submitBtn = await page.$('button[type="submit"], button:has-text("Upload")');
-    if (submitBtn) {
-      await submitBtn.click();
-      logger.info('Upload submitted');
-      await sleep(5000);
-    }
+    await page.screenshot({ path: path.join(config.paths.logs, 'after-file-selected.png'), fullPage: true });
+
+    // Step 7: Wait for upload to complete (eBay processes the file automatically after selection)
+    logger.info('Waiting for upload to process...');
+    await sleep(15000);
+    logger.info('Upload submitted');
   } else {
-    logger.warn('No file input found on page. Manual upload may be required.');
-    logger.info('CSV file ready for manual upload:', { csvPath });
+    // Fallback: use Puppeteer's setInputFiles directly on the file input
+    logger.warn('File chooser not intercepted — trying setInputFiles fallback...');
+    try {
+      await page.focus('input#file-input');
+      await (page as any).setInputFiles('input#file-input', csvPath);
+      logger.info('setInputFiles fallback succeeded');
+      await sleep(15000);
+    } catch (e: any) {
+      logger.warn('setInputFiles fallback failed:', { error: e.message });
+      logger.info('CSV file ready for manual upload:', { csvPath });
+    }
   }
 
-  await page.screenshot({
-    path: path.join(config.paths.logs, 'upload-result.png'),
-    fullPage: true,
-  });
+  await page.screenshot({ path: path.join(config.paths.logs, 'upload-result.png'), fullPage: true });
 }
 
 async function main() {
