@@ -105,6 +105,18 @@ export const CSV_COLUMNS = [
   /* 93 */ 'Responsible Person 1 Phone',
   /* 94 */ 'Responsible Person 1 Email',
   /* 95 */ 'Responsible Person 1 ContactURL',
+  // Category-specific item specifics (eyewear, shoes, jewelry, watches)
+  /* 96  */ 'C:Frame Color',
+  /* 97  */ 'C:Lens Technology',
+  /* 98  */ 'C:Frame Material',
+  /* 99  */ 'C:Protection',
+  /* 100 */ 'C:US Shoe Size',
+  /* 101 */ 'C:Base Metal',
+  /* 102 */ 'C:Main Stone',
+  /* 103 */ 'C:Movement',
+  /* 104 */ 'C:Display',
+  /* 105 */ 'C:Lens Strength',
+  /* 106 */ 'C:Ring Size',
 ] as const;
 
 export type CSVColumn = typeof CSV_COLUMNS[number];
@@ -113,7 +125,7 @@ export type CSVColumn = typeof CSV_COLUMNS[number];
 export const COL_IDX: Record<string, number> = {};
 CSV_COLUMNS.forEach((col, i) => { COL_IDX[col] = i; });
 
-export const COLUMN_COUNT = CSV_COLUMNS.length; // 96
+export const COLUMN_COUNT = CSV_COLUMNS.length; // 107
 
 // ─── Metadata lines (must appear before data) ─────────────────────────────────
 

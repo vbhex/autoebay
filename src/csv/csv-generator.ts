@@ -50,9 +50,10 @@ function calculatePriceUsd(priceCny: number, priceUsdFromDb: number): number {
 }
 
 // ─── Title sanitizer ─────────────────────────────────────────────────────────
-// eBay error 240: prohibited medical/health terms in listings.
+// eBay error 240: prohibited medical/health terms and marketing superlatives.
 // Strip or replace terms that trigger eBay's improper-words filter.
 const PROHIBITED_TITLE_PATTERNS: Array<[RegExp, string]> = [
+  // Medical / health claims (eyewear)
   [/\bmyopia\b/gi, ''],
   [/\bshort[\s-]?sighted(?:ness)?\b/gi, ''],
   [/\bnear[\s-]?sighted(?:ness)?\b/gi, ''],
@@ -62,6 +63,14 @@ const PROHIBITED_TITLE_PATTERNS: Array<[RegExp, string]> = [
   [/\bfarsighted(?:ness)?\b/gi, ''],
   [/\blongsighted(?:ness)?\b/gi, ''],
   [/\b(?:for|treat(?:ing)?|correct(?:ing)?)\s+(?:vision|eyesight)\b/gi, ''],
+  [/\banti[\s-]?radiation\b/gi, ''],
+  [/\banti[\s-]?blue[\s-]?light\b/gi, 'blue light'],
+  // Marketing superlatives prohibited by eBay policy
+  [/\b(?:hot|best|top|number[\s-]?one)[\s-]?sell(?:ing)?\b/gi, ''],
+  [/\bcross[\s-]?border\b/gi, ''],
+  // Remove trailing/leading commas and spaces left by removals
+  [/,\s*,/g, ','],
+  [/^[,\s]+|[,\s]+$/g, ''],
   [/\s{2,}/g, ' '],   // collapse double spaces left by removals
 ];
 
