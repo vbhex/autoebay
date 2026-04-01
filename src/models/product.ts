@@ -108,6 +108,7 @@ export type ProductStatus =
   | 'csv_generated'
   | 'ebay_exported'
   | 'listed'
+  | 'list_failed'
   | 'skipped';
 
 export interface ProductEN {

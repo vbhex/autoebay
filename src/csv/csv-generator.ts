@@ -30,7 +30,7 @@ const CNY_TO_USD = 7.2;
 
 // ─── Pricing ──────────────────────────────────────────────────────────────────
 
-function calculatePriceUsd(priceCny: number, priceUsdFromDb: number): number {
+export function calculatePriceUsd(priceCny: number, priceUsdFromDb: number): number {
   const markup = config.pricing.markup;
   let price: number;
 
@@ -52,7 +52,7 @@ function calculatePriceUsd(priceCny: number, priceUsdFromDb: number): number {
 // ─── Title sanitizer ─────────────────────────────────────────────────────────
 // eBay error 240: prohibited medical/health terms and marketing superlatives.
 // Strip or replace terms that trigger eBay's improper-words filter.
-const PROHIBITED_TITLE_PATTERNS: Array<[RegExp, string]> = [
+export const PROHIBITED_TITLE_PATTERNS: Array<[RegExp, string]> = [
   // Medical / health claims (eyewear)
   [/\bmyopia\b/gi, ''],
   [/\bshort[\s-]?sighted(?:ness)?\b/gi, ''],
@@ -99,7 +99,7 @@ const PROHIBITED_TITLE_PATTERNS: Array<[RegExp, string]> = [
   [/\s{2,}/g, ' '],   // collapse double spaces left by removals
 ];
 
-function sanitizeTitle(raw: string): string {
+export function sanitizeTitle(raw: string): string {
   let t = raw;
   for (const [pattern, replacement] of PROHIBITED_TITLE_PATTERNS) {
     t = t.replace(pattern, replacement);
@@ -109,7 +109,7 @@ function sanitizeTitle(raw: string): string {
 
 // ─── Description builder ──────────────────────────────────────────────────────
 
-function buildDescription(
+export function buildDescription(
   title: string,
   specs: Array<{ name: string; value: string }>,
 ): string {
@@ -149,7 +149,7 @@ function buildDescription(
   return lines.join('');
 }
 
-function escapeHTML(str: string): string {
+export function escapeHTML(str: string): string {
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -162,17 +162,17 @@ function escapeHTML(str: string): string {
 const COLOR_WORDS = ['color', 'colour', '颜色', 'clr'];
 const SIZE_WORDS = ['size', '尺寸', '大小', '型号', 'sz'];
 
-function isColorKey(key: string): boolean {
+export function isColorKey(key: string): boolean {
   const k = key.toLowerCase();
   return COLOR_WORDS.some(w => k.includes(w));
 }
 
-function isSizeKey(key: string): boolean {
+export function isSizeKey(key: string): boolean {
   const k = key.toLowerCase();
   return SIZE_WORDS.some(w => k.includes(w));
 }
 
-function containsChinese(s: string): boolean {
+export function containsChinese(s: string): boolean {
   return /[\u4e00-\u9fff]/.test(s);
 }
 
@@ -219,7 +219,7 @@ const CHINESE_VALUE_MAP: Record<string, string> = {
 /** Characters eBay does not allow inside variation values. */
 const VARIANT_ILLEGAL_CHARS = /[/\\()+*#@!%^&=<>{}[\]]/g;
 
-function cleanVariantValue(raw: string): string {
+export function cleanVariantValue(raw: string): string {
   if (!raw) return raw;
   let name = raw.trim();
 

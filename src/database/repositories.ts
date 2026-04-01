@@ -292,6 +292,69 @@ export async function markProductsAsEbayExported(productIds: number[]): Promise<
   logger.info('Marked products as ebay_exported', { count: productIds.length });
 }
 
+export async function markProductAsListed(productId: number): Promise<void> {
+  const p = await getPool();
+  await p.query(
+    `UPDATE products SET status = 'listed' WHERE id = ?`,
+    [productId]
+  );
+  logger.info('Marked product as listed', { productId });
+}
+
+export async function markProductAsListFailed(productId: number): Promise<void> {
+  const p = await getPool();
+  await p.query(
+    `UPDATE products SET status = 'list_failed' WHERE id = ?`,
+    [productId]
+  );
+  logger.info('Marked product as list_failed', { productId });
+}
+
+export async function getProductById(productId: number): Promise<ExportProduct | null> {
+  const results = await getProductsForEbayExport(1, undefined, true);
+  // The main query doesn't filter by ID, so we do a specific one
+  const p = await getPool();
+  const [rows] = await p.query<RowDataPacket[]>(
+    `SELECT p.id, p.id_1688 AS id1688, p.category, COALESCE(pr.price_cny, 0) AS priceCny
+     FROM products p
+     LEFT JOIN products_raw pr ON pr.product_id = p.id
+     WHERE p.id = ?
+     LIMIT 1`,
+    [productId]
+  );
+
+  if ((rows as any[]).length === 0) return null;
+
+  const prod = (rows as any[])[0];
+  const productIds = [prod.id as number];
+
+  const [enMap, imagesMap, variantsEnMap, variantStructureMap, skusMap] = await Promise.all([
+    batchGetProductEN(productIds),
+    batchGetImagesOk(productIds, true),
+    batchGetVariantsEN(productIds),
+    batchGetProductVariantsWithValues(productIds),
+    batchGetVariantSkus(productIds, true),
+  ]);
+
+  const en = enMap.get(prod.id);
+  if (!en) return null;
+
+  const images = imagesMap.get(prod.id) ?? [];
+  const rawVariants = variantsEnMap.get(prod.id) ?? [];
+
+  return {
+    id: prod.id,
+    id1688: prod.id1688,
+    category: prod.category,
+    priceCny: Number(prod.priceCny),
+    en,
+    images,
+    variants: rawVariants.map(v => ({ ...v, priceCny: 0 })),
+    variantStructure: variantStructureMap.get(prod.id) ?? [],
+    skus: skusMap.get(prod.id) ?? [],
+  };
+}
+
 export async function markProductsAsCsvGenerated(productIds: number[]): Promise<void> {
   if (productIds.length === 0) return;
   const p = await getPool();
