@@ -83,7 +83,8 @@ export async function loginToEbay(page: any): Promise<void> {
 
   // Wait for manual intervention if 2FA is needed
   logger.info('Waiting for login to complete (handle 2FA manually if needed)...');
-  await sleep(10000);
+  logger.info('If you see a 2FA prompt, complete it now (browser is visible)');
+  await sleep(30000); // 30 seconds for user to complete 2FA
 
   // Take screenshot
   ensureDirectoryExists(config.paths.logs);
