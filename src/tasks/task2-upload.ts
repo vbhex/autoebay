@@ -23,6 +23,11 @@ import { launchBrowser, loadCookies, loginToEbay, ensureLoggedIn } from '../brow
 const logger = createChildLogger('task2-upload');
 
 async function uploadCSV(page: any, csvPath: string): Promise<void> {
+  logger.info('Setting language to English...');
+  // Navigate to English eBay first to ensure UI is in English
+  await page.goto('https://www.ebay.com/sl/prelist/home', { waitUntil: 'networkidle2', timeout: 60000 });
+  await sleep(1000);
+
   logger.info('Navigating to eBay reports/uploads page...');
   await page.goto('https://www.ebay.com/sh/reports/uploads', { waitUntil: 'networkidle2', timeout: 60000 });
   await sleep(3000);
