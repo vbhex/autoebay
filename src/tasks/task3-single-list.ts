@@ -417,8 +417,8 @@ async function listSingleProduct(
     return null;
   }
 
-  // Wait for listing confirmation
-  await sleep(10000);
+  // Wait for listing confirmation (increase wait if needed for slow networks)
+  await sleep(15000);
   await takeDebugScreenshot(page, `after-submit-${data.id1688}`);
 
   // Step 14: Extract eBay item ID from confirmation page
@@ -461,7 +461,8 @@ async function main() {
   const productIdArg = args.find((_, i, a) => a[i - 1] === '--product-id');
   const dryRun = args.includes('--dry-run');
   const singleOnly = args.includes('--single-only');
-  const headless = process.env.HEADLESS === '1';
+  // Run visible by default (headless requires explicit --headless flag)
+  const headless = args.includes('--headless');
 
   logger.info('Task 3: eBay Single Listing', {
     limit, categoryFilter, productIdArg, dryRun, singleOnly, headless,
