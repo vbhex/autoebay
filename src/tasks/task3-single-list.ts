@@ -51,7 +51,7 @@ async function listSingleProduct(
 
   // Step 1: Navigate to prelist page
   logger.info('Step 1: Navigating to prelist page...');
-  await page.goto(PRELIST_URL, { waitUntil: 'networkidle2', timeout: 60000 });
+  await page.goto(PRELIST_URL, { waitUntil: 'networkidle2', timeout: 120000 });
   await sleep(2000);
 
   // Step 2: Enter title in search bar and search
