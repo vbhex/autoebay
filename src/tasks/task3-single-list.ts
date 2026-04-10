@@ -28,7 +28,7 @@ import {
   markProductAsListed,
   markProductAsListFailed,
 } from '../database/repositories';
-import { launchBrowser, loadCookies, ensureLoggedIn } from '../browser/browser-utils';
+import { launchBrowser, loadCookies, ensureLoggedIn, loginToEbay } from '../browser/browser-utils';
 import { downloadProductImages, cleanupTempImages } from '../browser/image-downloader';
 import { takeDebugScreenshot, clickButtonByText, scrollToBottom, getPageButtons } from '../browser/form-helpers';
 import { prepareListingData, ListingData } from '../listing/listing-data-preparer';
@@ -49,30 +49,45 @@ async function listSingleProduct(
   logger.info(`Category: ${data.categoryKey} → ${data.category.ebayCategoryName} (${data.category.ebayCategoryId})`);
   logger.info(`Price: $${data.price}`);
 
-  // Step 1: Navigate to prelist page
-  logger.info('Step 1: Navigating to prelist page...');
-  await page.goto(PRELIST_URL, { waitUntil: 'networkidle2', timeout: 120000 });
-  await sleep(2000);
+  // Step 1: Already on prelist page (main loop navigated here after session check)
+  logger.info('Step 1: On prelist page, waiting for it to settle...');
+  await sleep(1500);
 
   // Step 2: Enter title in search bar and search
   logger.info('Step 2: Entering product title in search bar...');
   try {
-    // The search input on the prelist page
-    await page.waitForSelector('input[type="text"], input[type="search"], input[placeholder*="brand"], input[placeholder*="Enter"]', { timeout: 10000 });
-    const searchInput = await page.$('input[type="text"], input[type="search"], input[placeholder*="brand"], input[placeholder*="Enter"]');
-    if (searchInput) {
-      await searchInput.click({ clickCount: 3 });
-      await searchInput.type(data.title, { delay: 20 });
-      await sleep(500);
-
-      // Click Search button
-      const searchClicked = await clickButtonByText(page, 'Search', 5000);
-      if (!searchClicked) {
-        // Try pressing Enter instead
-        await page.keyboard.press('Enter');
+    // Wait for search input to appear — prelist page uses various placeholder texts
+    const inputSelector = await (async () => {
+      for (const sel of [
+        'input[placeholder*="brand"]',
+        'input[placeholder*="model"]',
+        'input[placeholder*="Describe"]',
+        'input[placeholder*="describe"]',
+        'input[placeholder*="Enter"]',
+        'input[type="search"]',
+        'input[type="text"]:not([type="hidden"])',
+      ]) {
+        try {
+          await page.waitForSelector(sel, { timeout: 3000 });
+          return sel;
+        } catch { /* try next */ }
       }
-      await sleep(3000);
-    }
+      return null;
+    })();
+
+    if (!inputSelector) throw new Error('Could not find search input element');
+
+    logger.info('Found search input', { selector: inputSelector });
+    // Triple-click to select all, then type to replace
+    await page.click(inputSelector, { clickCount: 3 });
+    await sleep(200);
+    await page.keyboard.down('Control');
+    await page.keyboard.press('a');
+    await page.keyboard.up('Control');
+    await page.type(inputSelector, data.title, { delay: 15 });
+    await sleep(400);
+    await page.keyboard.press('Enter');
+    await sleep(3500);
   } catch (err: any) {
     logger.warn('Could not find search input', { error: err.message });
     await takeDebugScreenshot(page, `search-fail-${data.id1688}`);
@@ -168,6 +183,20 @@ async function listSingleProduct(
   } catch (err: any) {
     logger.warn('Photo upload issue', { error: err.message });
     cleanupTempImages(data.id1688);
+  }
+
+  // Check if page context is still valid
+  try {
+    await page.evaluate(() => document.title);
+  } catch (err: any) {
+    logger.warn('Page context destroyed after photo upload, trying to recover', { error: err.message });
+    // Try to navigate back to the prelist page
+    try {
+      await page.goto(PRELIST_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await sleep(2000);
+    } catch {
+      throw new Error('Page context destroyed and could not recover');
+    }
   }
 
   await takeDebugScreenshot(page, `after-photos-${data.id1688}`);
@@ -406,10 +435,33 @@ async function listSingleProduct(
   }
 
   logger.info('Step 13: Submitting listing...');
+
+  // Capture network responses during submission
+  let capturedItemId: string | null = null;
+  const responseHandler = (response: any) => {
+    if (response.url().includes('addItem') || response.url().includes('prelist')) {
+      try {
+        response.json().then((json: any) => {
+          // Look for item ID in response
+          if (json.itemId) {
+            capturedItemId = json.itemId;
+            logger.debug('Captured item ID from network response', { itemId: json.itemId });
+          }
+        }).catch(() => {
+          // Not JSON or error parsing
+        });
+      } catch {}
+    }
+  };
+
+  page.on('response', responseHandler);
+
   const submitClicked =
     await clickButtonByText(page, 'List it', 5000) ||
     await clickButtonByText(page, 'Submit', 5000) ||
     await clickButtonByText(page, 'Publish', 5000);
+
+  page.off('response', responseHandler);
 
   if (!submitClicked) {
     logger.warn('Could not find submit button');
@@ -421,31 +473,85 @@ async function listSingleProduct(
   await sleep(15000);
   await takeDebugScreenshot(page, `after-submit-${data.id1688}`);
 
-  // Step 14: Extract eBay item ID from confirmation page
-  const itemId = await page.evaluate(() => {
-    const text = document.body.innerText;
-    // Look for patterns like item number or /itm/ URL
-    const urlMatch = window.location.href.match(/\/itm\/(\d+)/);
-    if (urlMatch) return urlMatch[1];
+  // Step 14: Try multiple methods to extract eBay item ID
+  let itemId = capturedItemId; // From network response
 
-    const textMatch = text.match(/(?:item|listing)\s*(?:number|ID|#)?\s*:?\s*(\d{12,14})/i);
-    if (textMatch) return textMatch[1];
+  // Method 1: Check current page for item ID
+  if (!itemId) {
+    itemId = await page.evaluate(() => {
+      const text = document.body.innerText;
+      // Look for patterns like item number or /itm/ URL
+      const urlMatch = window.location.href.match(/\/itm\/(\d+)/);
+      if (urlMatch) return urlMatch[1];
 
-    // Check for success indicators
-    const hasSuccess = text.toLowerCase().includes('listed') || text.toLowerCase().includes('congratulations');
-    if (hasSuccess) {
-      // Try to find any 12-14 digit number on the page
-      const numMatch = text.match(/\b(\d{12,14})\b/);
-      if (numMatch) return numMatch[1];
+      const textMatch = text.match(/(?:item|listing)\s*(?:number|ID|#)?\s*:?\s*(\d{12,14})/i);
+      if (textMatch) return textMatch[1];
+
+      // Check for success indicators
+      const hasSuccess = text.toLowerCase().includes('listed') || text.toLowerCase().includes('congratulations');
+      if (hasSuccess) {
+        // Try to find any 12-14 digit number on the page
+        const numMatch = text.match(/\b(\d{12,14})\b/);
+        if (numMatch) return numMatch[1];
+      }
+
+      return null;
+    }).catch(() => null);
+  }
+
+  // Method 2: Query Seller Hub — scan "Buy It Now · {itemId}" text pattern in active listings
+  if (!itemId) {
+    logger.info('Item ID not found on confirmation page, checking Seller Hub...');
+    try {
+      await page.goto('https://www.ebay.com/sh/lst/active', { waitUntil: 'networkidle2', timeout: 30000 });
+      await sleep(2000);
+
+      // eBay Seller Hub renders item IDs inline as "Buy It Now · 287157190125"
+      const recentListings = await page.evaluate((searchTitle: string) => {
+        const results: Array<{ id: string; title: string }> = [];
+        // Scan all text nodes for "Buy It Now · {12-14 digit number}" pattern
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        let node;
+        while ((node = walker.nextNode())) {
+          const text = node.textContent || '';
+          const idMatch = text.match(/Buy It Now\s*·\s*(\d{12,14})/);
+          if (idMatch) {
+            // Walk up to find the title link in the same row
+            let el = node.parentElement;
+            let title = '';
+            for (let i = 0; i < 6; i++) {
+              if (!el) break;
+              const link = el.querySelector('a[href*="/itm/"]');
+              if (link) { title = link.textContent?.trim() || ''; break; }
+              el = el.parentElement;
+            }
+            results.push({ id: idMatch[1], title });
+          }
+        }
+        return results;
+      }, data.title.substring(0, 30)).catch(() => []);
+
+      logger.info('Seller Hub listings found:', { count: recentListings.length, listings: recentListings });
+
+      // Match by title similarity
+      const titleWords = data.title.toLowerCase().split(' ').slice(0, 4).join(' ');
+      const match = recentListings.find(l =>
+        l.title.toLowerCase().includes(titleWords) || titleWords.includes(l.title.toLowerCase().substring(0, 20))
+      ) || recentListings[0]; // fallback: most recently listed
+
+      if (match) {
+        itemId = match.id;
+        logger.info(`Found item ID from Seller Hub: ${itemId}`, { title: match.title });
+      }
+    } catch (err: any) {
+      logger.debug('Could not query Seller Hub', { error: err.message });
     }
-
-    return null;
-  });
+  }
 
   if (itemId) {
     logger.info(`Listing created! eBay item ID: ${itemId}`);
   } else {
-    logger.warn('Could not extract eBay item ID from confirmation page');
+    logger.warn('Could not extract eBay item ID from confirmation page or Seller Hub');
     logger.info('Current URL:', { url: page.url() });
   }
 
@@ -503,6 +609,24 @@ async function main() {
   let skipped = 0;
 
   for (const product of products) {
+    // Check session by hitting the Seller Hub (reliable auth indicator)
+    const isLoggedIn = await (async () => {
+      try {
+        await page.goto('https://www.ebay.com/sh/ovw', { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await sleep(1000);
+        return !page.url().includes('signin') && !page.url().includes('SignIn');
+      } catch { return false; }
+    })();
+
+    if (!isLoggedIn) {
+      logger.info('Session expired, re-authenticating...');
+      await loginToEbay(page);
+    }
+
+    // Now navigate to prelist — ready for listing
+    await page.goto(PRELIST_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await sleep(1500);
+
     const data = prepareListingData(product);
     if (!data) {
       skipped++;

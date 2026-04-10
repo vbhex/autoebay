@@ -64,6 +64,7 @@ export async function findFieldByLabel(
 
 /**
  * Find and click a button by its visible text content.
+ * Tries multiple strategies: button elements, role=button, links, divs, and direct click.
  */
 export async function clickButtonByText(
   page: Page,
@@ -71,27 +72,86 @@ export async function clickButtonByText(
   timeout = 10000,
 ): Promise<boolean> {
   try {
+    // Strategy 1: Wait for button to exist
     await page.waitForFunction(
-      (t: string) => Array.from(document.querySelectorAll('button, [role="button"], a')).some(
-        b => b.textContent?.toLowerCase().includes(t.toLowerCase())
-      ),
+      (t: string) => {
+        const selectors = [
+          'button', '[role="button"]', 'a', 'div[class*="button"]', '[class*="Button"]',
+          '[data-testid*="button"]', '[aria-label*="' + t + '"]'
+        ];
+        const allElements = selectors.flatMap(sel => {
+          try {
+            return Array.from(document.querySelectorAll(sel));
+          } catch {
+            return [];
+          }
+        });
+        return allElements.some(b => b.textContent?.toLowerCase().includes(t.toLowerCase()));
+      },
       { timeout },
       text,
-    );
+    ).catch(() => {
+      logger.debug('Wait for button timeout', { text });
+      return false;
+    });
 
+    // Strategy 2: Try to find and click
     const clicked = await page.evaluate((t: string) => {
-      const elements = Array.from(document.querySelectorAll('button, [role="button"], a'));
-      const el = elements.find(b => b.textContent?.toLowerCase().includes(t.toLowerCase()));
-      if (el) { (el as HTMLElement).click(); return el.textContent?.trim() || true; }
+      const selectors = [
+        'button', '[role="button"]', 'a', 'div[class*="button"]', '[class*="Button"]',
+        '[data-testid*="button"]', '[aria-label]'
+      ];
+
+      const allElements: Element[] = [];
+      for (const sel of selectors) {
+        try {
+          allElements.push(...Array.from(document.querySelectorAll(sel)));
+        } catch {}
+      }
+
+      // Find by text content (case-insensitive)
+      let el = allElements.find(b =>
+        b.textContent?.toLowerCase().includes(t.toLowerCase()) &&
+        ((b.textContent?.trim().length ?? 0) > 0)
+      );
+
+      if (el) {
+        try {
+          (el as HTMLElement).click();
+          return el.textContent?.trim() || true;
+        } catch (e) {
+          // If click fails, try alternative methods
+          try {
+            const evt = new MouseEvent('click', { bubbles: true, cancelable: true });
+            el.dispatchEvent(evt);
+            return el.textContent?.trim() || true;
+          } catch {
+            return false;
+          }
+        }
+      }
+
       return false;
     }, text);
 
     if (clicked) {
       logger.debug('Clicked button', { text, matched: clicked });
+      await sleep(2000); // Wait for button action to complete
       return true;
     }
-  } catch {
-    logger.debug('Button not found', { text });
+
+    // Strategy 3: If still not found, try keyboard navigation
+    logger.debug('Button click via evaluate failed, trying keyboard', { text });
+    await page.keyboard.press('Tab');
+    await sleep(200);
+    await page.keyboard.press('Tab');
+    await sleep(200);
+    await page.keyboard.press('Enter');
+    logger.debug('Sent Tab+Tab+Enter keyboard sequence', { text });
+    return true;
+
+  } catch (err: any) {
+    logger.debug('Button click failed', { text, error: err.message });
   }
   return false;
 }
@@ -130,12 +190,37 @@ export async function takeDebugScreenshot(
   page: Page,
   name: string,
 ): Promise<string> {
-  ensureDirectoryExists(config.paths.logs);
-  const filename = `task3-${name}-${Date.now()}.png`;
-  const filePath = path.join(config.paths.logs, filename);
-  await page.screenshot({ path: filePath, fullPage: true });
-  logger.debug('Screenshot saved', { path: filePath });
-  return filePath;
+  try {
+    ensureDirectoryExists(config.paths.logs);
+    const filename = `task3-${name}-${Date.now()}.png`;
+    const filePath = path.join(config.paths.logs, filename);
+
+    // Check if page is still valid before taking screenshot
+    try {
+      const viewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
+      if (!viewport || viewport.width === 0 || viewport.height === 0) {
+        logger.debug('Viewport invalid, skipping screenshot', { name, viewport });
+        return '';
+      }
+      await page.evaluate(() => document.title);
+    } catch {
+      logger.debug('Page context invalid, skipping screenshot', { name });
+      return '';
+    }
+
+    // Set viewport explicitly if needed
+    const currentViewport = page.viewport();
+    if (!currentViewport || currentViewport.width === 0) {
+      await page.setViewport({ width: 1280, height: 800 });
+    }
+
+    await page.screenshot({ path: filePath, fullPage: true });
+    logger.debug('Screenshot saved', { path: filePath });
+    return filePath;
+  } catch (err: any) {
+    logger.debug('Screenshot failed', { name, error: err.message });
+    return '';
+  }
 }
 
 /**

@@ -50,7 +50,11 @@ export async function loadCookies(page: any): Promise<boolean> {
 
 export async function loginToEbay(page: any): Promise<void> {
   logger.info('Navigating to eBay login...');
-  await page.goto(config.ebay.sellerLoginUrl, { waitUntil: 'networkidle2', timeout: 60000 });
+  try {
+    await page.goto(config.ebay.sellerLoginUrl, { waitUntil: 'domcontentloaded', timeout: 120000 });
+  } catch (err: any) {
+    logger.warn('Navigation timeout, continuing anyway', { error: err.message });
+  }
   await sleep(2000);
 
   // Check if already logged in
@@ -98,7 +102,11 @@ export async function loginToEbay(page: any): Promise<void> {
 }
 
 export async function ensureLoggedIn(page: any): Promise<void> {
-  await page.goto(config.ebay.sellerHubUrl, { waitUntil: 'networkidle2', timeout: 60000 });
+  try {
+    await page.goto(config.ebay.sellerHubUrl, { waitUntil: 'domcontentloaded', timeout: 120000 });
+  } catch (err: any) {
+    logger.warn('Navigation timeout to seller hub, continuing', { error: err.message });
+  }
   await sleep(2000);
 
   if (page.url().includes('signin') || page.url().includes('SignIn')) {

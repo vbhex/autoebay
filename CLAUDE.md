@@ -19,7 +19,7 @@ then uploads them to eBay Seller Hub Reports via browser automation.
 ```
 
 - **Coding**: Main Computer (localhost)
-- **Running**: China MacBook (see `config/china-macbook.env`) — `cd ~/projects/autostore/ebay`
+- **Running**: local machine (see `config/china-macbook.env`) — `cd ~/projects/autostore/ebay`
 
 ## Database
 
@@ -105,7 +105,7 @@ npm run task:upload              # upload latest CSV
 npm run task:upload -- --file output/ebay-export-2026-03-22.csv
 ```
 
-## Full Pipeline (run on China MacBook)
+## Full Pipeline (run on local machine)
 
 ```bash
 cd ~/projects/autostore/ebay
@@ -137,7 +137,7 @@ Start small, build reputation, then scale.
 - **Only `authorized_products` are imported** — brand-verified via Task 8
 - **Max 80 chars for title** — eBay strictly enforces this
 - **Main Computer = coding only** — never run tasks here
-- **China MacBook = running only** — pull, build, execute
+- **local machine = running only** — pull, build, execute
 - **Build with `./node_modules/.bin/tsc`** — NOT `npx tsc`
 - **Cookies file** is at `data/ebay-cookies.json` — do not commit to git
 

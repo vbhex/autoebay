@@ -11,7 +11,8 @@
     "task:login": "npm run build && node dist/tasks/task2-upload.js --login",
     "task:list": "npm run build && node dist/tasks/task3-single-list.js",
     "task:list:dry": "npm run build && node dist/tasks/task3-single-list.js --dry-run",
-    "task:list:single": "npm run build && node dist/tasks/task3-single-list.js --single-only"
+    "task:list:single": "npm run build && node dist/tasks/task3-single-list.js --single-only",
+    "task:recover": "npm run build && node dist/tasks/task3-recover-itemids.js"
   },
   "keywords": [
     "ebay",

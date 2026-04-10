@@ -103,15 +103,26 @@ async function uploadCSV(page: any, csvPath: string): Promise<void> {
   } else {
     logger.warn('File chooser not intercepted — trying uploadFile fallback...');
     try {
-      await page.focus('input#file-input');
-      const fileInput = await page.$('input[type="file"]');
+      // Try multiple selectors to find the file input
+      let fileInput = await page.$('input#file-input');
+      if (!fileInput) {
+        fileInput = await page.$('input[type="file"]');
+      }
+      if (!fileInput) {
+        // Search all inputs for file type
+        fileInput = await page.evaluate(() => {
+          const inputs = Array.from(document.querySelectorAll('input'));
+          return inputs.find(i => i.type === 'file') || null;
+        }).then((el: any) => el ? page.$(el) : null);
+      }
+
       if (fileInput) {
         await fileInput.uploadFile(csvPath);
         logger.info('uploadFile fallback succeeded');
+        await sleep(15000);
       } else {
         throw new Error('File input element not found');
       }
-      await sleep(15000);
     } catch (e: any) {
       logger.warn('uploadFile fallback failed:', { error: e.message });
       logger.info('CSV file ready for manual upload:', { csvPath });
