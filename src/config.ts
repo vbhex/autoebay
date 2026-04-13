@@ -86,7 +86,7 @@ export function loadConfig(): Config {
       database: getEnvVar('MYSQL_DATABASE', 'ebay_autostore'),
     },
     sourceDb: {
-      database: getEnvVar('SOURCE_MYSQL_DATABASE', '1688_source'),
+      database: getEnvVar('SOURCE_MYSQL_DATABASE', '1688_source_ebay'),
     },
     pricing: {
       markup: getEnvNumber('PRICE_MARKUP', 3.0),
