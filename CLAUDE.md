@@ -130,6 +130,20 @@ npm run task:upload
 eBay starts new sellers at **10 items / $500**. Limits increase automatically with good performance.
 Start small, build reputation, then scale.
 
+## eBay Sourcing Strategy — DEMAND FIRST (MANDATORY)
+
+**Full doc: `documents/ebay-store/EBAY_SOURCING_STRATEGY.md`**
+
+**The rule**: Find what sells on eBay → find the 1688 source → list it. Never start from supply.
+
+1. Search eBay for a category → filter **Sold Items + New** → study top results (title keywords, price, sales count, image style)
+2. Find a matching product on 1688.com at a price that gives 3x+ markup
+3. List it, modelling the title/price/image after the proven eBay seller
+
+**Do NOT list a product just because it's available in 1688 — always verify eBay demand first.**
+
+Any category is fair game as long as: sells well on eBay, 3x+ markup available, brand-safe, not prohibited.
+
 ## Critical Rules
 
 - **NEVER list branded products** — eBay VeRO program is aggressive
