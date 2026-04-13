@@ -99,6 +99,22 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
 
   // ── Sneakers ──────────────────────────────────────────────────────
   'sneakers': { ebayCategoryId: 15709, ebayCategoryName: 'Athletic Shoes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Athletic', Department: 'Unisex', Style: 'Sneakers', 'US Shoe Size': '9', 'Upper Material': 'Synthetic', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Pipeline category aliases (1688_scrapper → eBay) ─────────────
+  'HairClaw':            { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Claw', Material: 'Plastic', 'Country/Region of Manufacture': 'China' } },
+  'HairClip':            { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Clip/Barrette', Material: 'Metal', 'Country/Region of Manufacture': 'China' } },
+  'Headband':            { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Headband', Material: 'Fabric', 'Country/Region of Manufacture': 'China' } },
+  'Scrunchie':           { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Scrunchie', Material: 'Velvet', 'Country/Region of Manufacture': 'China' } },
+  'HairAccessoriesSet':  { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Set', Material: 'Mixed', 'Country/Region of Manufacture': 'China' } },
+  'HairPin':             { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Pin', Material: 'Metal', 'Country/Region of Manufacture': 'China' } },
+  'Necklace':            { ebayCategoryId: 155101, ebayCategoryName: 'Fashion Necklaces & Pendants', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Pendant', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'Anklets':             { ebayCategoryId: 50637, ebayCategoryName: 'Fashion Bracelets', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Anklet', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'StudEarrings':        { ebayCategoryId: 50647, ebayCategoryName: 'Fashion Earrings', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Stud', 'Main Stone': 'Crystal', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'DangleEarrings':      { ebayCategoryId: 50647, ebayCategoryName: 'Fashion Earrings', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Drop/Dangle', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'HoopEarrings':        { ebayCategoryId: 50647, ebayCategoryName: 'Fashion Earrings', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hoop', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'ClipEarrings':        { ebayCategoryId: 50647, ebayCategoryName: 'Fashion Earrings', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Clip-On', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'BohoAnklets':         { ebayCategoryId: 50637, ebayCategoryName: 'Fashion Bracelets', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Anklet', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+  'EarringJackets':      { ebayCategoryId: 50647, ebayCategoryName: 'Fashion Earrings', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Jacket', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
 };
 
 export const EBAY_CATEGORIES = Object.keys(EBAY_CATEGORY_MAP);
