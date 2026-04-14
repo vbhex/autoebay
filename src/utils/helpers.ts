@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { getPool } from '../database/db';
 
 export function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -10,7 +11,32 @@ export function ensureDirectoryExists(dirPath: string): void {
   }
 }
 
+// In-memory cache of famous brand terms (loaded from DB once per process)
+let _famousBrandTerms: string[] | null = null;
+
+export async function loadFamousBrandTerms(): Promise<string[]> {
+  if (_famousBrandTerms) return _famousBrandTerms;
+  const p = await getPool();
+  const [rows] = await p.query<any[]>(
+    'SELECT brand_name, aliases FROM famous_brands WHERE active = 1'
+  );
+  const terms: string[] = [];
+  for (const row of rows) {
+    terms.push(row.brand_name.toLowerCase());
+    if (row.aliases) {
+      for (const alias of row.aliases.split(',')) {
+        const a = alias.trim().toLowerCase();
+        if (a) terms.push(a);
+      }
+    }
+  }
+  _famousBrandTerms = terms;
+  return terms;
+}
+
 export function isBannedBrand(text: string): boolean {
+  // Synchronous fallback list — used until DB is loaded via loadFamousBrandTerms()
+  // Keep this in sync with the famous_brands DB table seeds in db.ts
   const bannedBrands = [
     'apple', 'iphone', 'ipad', 'airpods', 'macbook',
     'samsung', 'galaxy',
@@ -32,8 +58,16 @@ export function isBannedBrand(text: string): boolean {
     'anker', 'baseus', 'remax',
   ];
 
+  // If DB terms are cached, use them; otherwise fall back to hardcoded list
+  const terms = _famousBrandTerms ?? bannedBrands;
   const lowerText = text.toLowerCase();
-  return bannedBrands.some(brand => lowerText.includes(brand));
+  return terms.some(brand => lowerText.includes(brand));
+}
+
+export async function isFamousBrand(text: string): Promise<boolean> {
+  const terms = await loadFamousBrandTerms();
+  const lowerText = text.toLowerCase();
+  return terms.some(brand => lowerText.includes(brand));
 }
 
 export function truncateToBytes(str: string, maxBytes: number): string {

@@ -147,6 +147,96 @@ export async function initSchema(): Promise<void> {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   `);
 
+  await p.query(`
+    CREATE TABLE IF NOT EXISTS famous_brands (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      brand_name VARCHAR(200) NOT NULL,
+      aliases VARCHAR(500),
+      notes VARCHAR(500),
+      active TINYINT(1) DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE KEY uk_brand_name (brand_name)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  `);
+
+  // Seed default famous brands if table is empty
+  const [existing] = await p.query<any[]>('SELECT COUNT(*) as cnt FROM famous_brands');
+  if (existing[0].cnt === 0) {
+    const defaults = [
+      ['Apple', 'iphone,ipad,airpods,macbook,imac', 'Consumer electronics giant'],
+      ['Samsung', 'galaxy', 'Korean electronics'],
+      ['Sony', 'playstation,ps4,ps5', 'Electronics & entertainment'],
+      ['Nike', null, 'Sportswear'],
+      ['Adidas', null, 'Sportswear'],
+      ['Puma', null, 'Sportswear'],
+      ['Under Armour', null, 'Sportswear'],
+      ['New Balance', null, 'Sportswear'],
+      ['Gucci', null, 'Luxury fashion'],
+      ['Louis Vuitton', 'lv', 'Luxury fashion'],
+      ['Prada', null, 'Luxury fashion'],
+      ['Hermes', 'hermès', 'Luxury fashion'],
+      ['Chanel', null, 'Luxury fashion'],
+      ['Dior', 'christian dior', 'Luxury fashion'],
+      ['Coach', null, 'Luxury accessories'],
+      ['Michael Kors', null, 'Fashion accessories'],
+      ['Kate Spade', null, 'Fashion accessories'],
+      ['Tory Burch', null, 'Fashion accessories'],
+      ['Burberry', null, 'Luxury fashion'],
+      ['Rolex', null, 'Luxury watches'],
+      ['Cartier', null, 'Luxury watches & jewelry'],
+      ['Omega', null, 'Luxury watches'],
+      ['Tag Heuer', 'tag heuer', 'Luxury watches'],
+      ['Breitling', null, 'Luxury watches'],
+      ['Tudor', null, 'Luxury watches'],
+      ['Casio', null, 'Watch brand'],
+      ['Seiko', null, 'Watch brand'],
+      ['Citizen', null, 'Watch brand'],
+      ['Fossil', null, 'Watch brand'],
+      ['Tissot', null, 'Watch brand'],
+      ['Swatch', null, 'Watch brand'],
+      ['Ray-Ban', 'ray ban,rayban', 'Eyewear brand'],
+      ['Oakley', null, 'Eyewear & sports'],
+      ['Versace', null, 'Luxury fashion'],
+      ['Dolce & Gabbana', 'dolce and gabbana,d&g', 'Luxury fashion'],
+      ['Pandora', null, 'Jewelry brand'],
+      ['Tiffany', 'tiffany & co', 'Luxury jewelry'],
+      ['Swarovski', null, 'Crystal jewelry'],
+      ['David Yurman', null, 'Luxury jewelry'],
+      ['North Face', 'the north face', 'Outdoor apparel'],
+      ['Patagonia', null, 'Outdoor apparel'],
+      ['Columbia', null, 'Outdoor apparel'],
+      ['Lululemon', null, 'Athleisure brand'],
+      ["Victoria's Secret", 'victorias secret', 'Lingerie & fashion'],
+      ['Huawei', null, 'Chinese electronics'],
+      ['Xiaomi', 'mi,redmi', 'Chinese electronics'],
+      ['Oppo', null, 'Chinese electronics'],
+      ['Vivo', null, 'Chinese electronics'],
+      ['Logitech', null, 'Computer peripherals'],
+      ['Razer', null, 'Gaming peripherals'],
+      ['Corsair', null, 'PC components & peripherals'],
+      ['GoPro', null, 'Action cameras'],
+      ['DJI', null, 'Drones & camera equipment'],
+      ['Canon', null, 'Cameras'],
+      ['Nikon', null, 'Cameras'],
+      ['Dyson', null, 'Home appliances'],
+      ['Marshall', null, 'Audio equipment'],
+      ['Sennheiser', null, 'Audio equipment'],
+      ['Bose', null, 'Audio equipment'],
+      ['JBL', null, 'Audio equipment'],
+      ['Beats', 'beats by dre', 'Audio equipment'],
+      ['Anker', null, 'Charging accessories'],
+      ['Baseus', null, 'Phone accessories'],
+      ['Remax', null, 'Phone accessories'],
+    ];
+    for (const [brand_name, aliases, notes] of defaults) {
+      await p.query(
+        'INSERT IGNORE INTO famous_brands (brand_name, aliases, notes) VALUES (?, ?, ?)',
+        [brand_name, aliases, notes]
+      );
+    }
+    logger.info('Seeded famous_brands table with default entries');
+  }
+
   logger.info('Schema initialized');
 }
 

@@ -142,7 +142,9 @@ Start small, build reputation, then scale.
 
 **Do NOT list a product just because it's available in 1688 — always verify eBay demand first.**
 
-Any category is fair game as long as: sells well on eBay, 3x+ markup available, brand-safe, not prohibited.
+**Brand rule for eBay**: Remove only very famous brands (Nike, Gucci, Louis Vuitton, Apple, Samsung, Sony, Rolex, etc.) — everything else is OK. Any non-famous-brand product in any category is fair game as long as it sells well on eBay with 3x+ markup available.
+
+**NOT restricted to brand-safe categories**: The brand-safe category restriction (Phase 1, 108 categories) applies ONLY to the automated Task 1 pipeline discovery. Manual eBay sourcing is allowed across ALL categories — watches, bags, shoes, finished jewelry, etc. — as long as very famous brands are removed.
 
 ## Critical Rules
 
