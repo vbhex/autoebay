@@ -100,6 +100,11 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   // ── Sneakers ──────────────────────────────────────────────────────
   'sneakers': { ebayCategoryId: 15709, ebayCategoryName: 'Athletic Shoes', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Athletic', Department: 'Unisex', Style: 'Sneakers', 'US Shoe Size': '9', 'Upper Material': 'Synthetic', 'Country/Region of Manufacture': 'China' } },
 
+  // ── Sunglasses pipeline aliases (1688 Chinese search terms → eBay) ─
+  '偏光太阳镜':        { ebayCategoryId: 155189, ebayCategoryName: 'Unisex Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sunglasses', Department: 'Unisex Adults', 'Frame Color': 'Assorted', 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', 'Country/Region of Manufacture': 'China' } },
+  '墨镜':             { ebayCategoryId: 155189, ebayCategoryName: 'Unisex Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sunglasses', Department: 'Unisex Adults', 'Frame Color': 'Assorted', 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', 'Country/Region of Manufacture': 'China' } },
+  'Sunglasses':       { ebayCategoryId: 155189, ebayCategoryName: 'Unisex Sunglasses', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Sunglasses', Department: 'Unisex Adults', 'Frame Color': 'Assorted', 'Lens Technology': 'Polarized', 'Frame Material': 'Plastic', Protection: '100% UV', 'Country/Region of Manufacture': 'China' } },
+
   // ── Pipeline category aliases (1688_scrapper → eBay) ─────────────
   'HairClaw':            { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Claw', Material: 'Plastic', 'Country/Region of Manufacture': 'China' } },
   'HairClip':            { ebayCategoryId: 45220, ebayCategoryName: 'Hair Accessories', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Hair Clip/Barrette', Material: 'Metal', 'Country/Region of Manufacture': 'China' } },
