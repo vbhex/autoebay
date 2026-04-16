@@ -120,6 +120,9 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
   'ClipEarrings':        { ebayCategoryId: 50647, ebayCategoryName: 'Fashion Earrings', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Clip-On', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
   'BohoAnklets':         { ebayCategoryId: 50637, ebayCategoryName: 'Fashion Bracelets', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Anklet', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
   'EarringJackets':      { ebayCategoryId: 50647, ebayCategoryName: 'Fashion Earrings', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Jacket', 'Main Stone': 'No Stone', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Body Jewelry (category 261986 — confirmed accessible to Greater China sellers) ──
+  'BodyChain':           { ebayCategoryId: 261986, ebayCategoryName: 'Body Jewelry', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Body Chain', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
 };
 
 export const EBAY_CATEGORIES = Object.keys(EBAY_CATEGORY_MAP);
