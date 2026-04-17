@@ -56,7 +56,7 @@ Products are sourced from the **same 1688 pipeline as AliExpress**. Categories t
 - Scarves
 - Belts & Gloves
 
-Blue-ocean categories: `documents/ebay-store/ebay-PENDING-blue-ocean-categories.md`
+Blue-ocean categories: `../rules/ebay-store/ebay-PENDING-blue-ocean-categories.md`
 
 ## CSV Format
 
@@ -83,7 +83,7 @@ Default markup: 3.0x. Min price: $9.99. eBay fees: ~13-15% total.
 
 ## Shipping Fee Strategy — MANDATORY
 
-**Full reference: `documents/ebay-store/EBAY_SHIPPING_FEE_STRATEGY.md`**
+**Full reference: `../rules/ebay-store/EBAY_SHIPPING_FEE_STRATEGY.md`**
 
 Two rules govern how every eBay listing handles shipping:
 
@@ -143,7 +143,7 @@ Start small, build reputation, then scale.
 
 ## eBay Sourcing Strategy — DEMAND FIRST (MANDATORY)
 
-**Full doc: `documents/ebay-store/EBAY_SOURCING_STRATEGY.md`**
+**Full doc: `../rules/ebay-store/EBAY_SOURCING_STRATEGY.md`**
 
 **The rule**: Find what sells on eBay → find the 1688 source → list it. Never start from supply.
 
@@ -159,7 +159,7 @@ Start small, build reputation, then scale.
 
 ## Greater China Seller Account Constraints — MANDATORY
 
-**Full reference: `documents/ebay-store/EBAY_GREATER_CHINA_SELLER_CONSTRAINTS.md`**
+**Full reference: `../rules/ebay-store/EBAY_GREATER_CHINA_SELLER_CONSTRAINTS.md`**
 
 These constraints apply to any AutoStore eBay account registered as a Greater China seller without a dedicated account manager (i.e. all our current accounts). Read the full doc before making any shipping policy changes or testing new categories.
 
