@@ -146,6 +146,21 @@ Start small, build reputation, then scale.
 
 **NOT restricted to brand-safe categories**: The brand-safe category restriction (Phase 1, 108 categories) applies ONLY to the automated Task 1 pipeline discovery. Manual eBay sourcing is allowed across ALL categories — watches, bags, shoes, finished jewelry, etc. — as long as very famous brands are removed.
 
+## Greater China Seller Account Constraints — MANDATORY
+
+**Full reference: `documents/ebay-store/EBAY_GREATER_CHINA_SELLER_CONSTRAINTS.md`**
+
+These constraints apply to any AutoStore eBay account registered as a Greater China seller without a dedicated account manager (i.e. all our current accounts). Read the full doc before making any shipping policy changes or testing new categories.
+
+**Critical highlights:**
+
+1. **SpeedPAK-only shipping** — only `eBay SpeedPAK Standard` and `eBay SpeedPAK Economy` are allowed. Non-SpeedPAK services (e.g. "Economy Shipping from Greater China to worldwide") are BLOCKED. Bulk policy updates that include a disallowed service fail with a misleading "improper words" error.
+2. **High-risk categories BLOCKED**: Hair Accessories (cat 45220), Unisex Sunglasses (155189), Men's Sunglasses (79720). Test-list ONE product before filling an entire form.
+3. **Visual brand inspection required** — always look at actual product images, not just titles. 1688 titles like "European and American Trendy Brand" often hide Gucci/LV/etc monograms in the images.
+4. **Default excluded countries**: Russia, Ukraine (account-level, cannot remove).
+5. **Recommended shipping policy**: Domestic SpeedPAK Standard (free) + International SpeedPAK Economy ($5 first / $2 each additional, Worldwide).
+6. **Bulk policy update fallback pattern** — if a policy update fails, listings get auto-reassigned to a "Copy" of the policy with previous settings. Fix the root cause, then bulk re-assign listings to the fixed original policy via Seller Hub → Active listings → Edit → Shipping policy.
+
 ## Critical Rules
 
 - **NEVER list branded products** — eBay VeRO program is aggressive
