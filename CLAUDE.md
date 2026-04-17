@@ -81,6 +81,17 @@ if priceUsd < 9.99 → raise to $9.99
 
 Default markup: 3.0x. Min price: $9.99. eBay fees: ~13-15% total.
 
+## Shipping Fee Strategy — MANDATORY
+
+**Full reference: `documents/ebay-store/EBAY_SHIPPING_FEE_STRATEGY.md`**
+
+Two rules govern how every eBay listing handles shipping:
+
+1. **Ship from China to US/Canada (primary markets)** — origin is always Guangdong/Shenzhen. US and Canada are our main destinations, but listings are configured ship-to: Worldwide via SpeedPAK Economy. Price with US/Canada as the reference market.
+2. **Estimate shipping fees by competitor reference** — for every product, search eBay for similar weight/size products shipping from China to the US, note competitor shipping fees, set ours at a comparable or slightly lower price. Do not guess.
+
+**Current default**: $5 first / $2 each additional on the SpeedPAK Free Shipping policy. Tuned for jewelry/small accessories. Adjust for heavier items based on competitor scan.
+
 ## CLI Commands
 
 ```bash
