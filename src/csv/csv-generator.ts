@@ -302,13 +302,32 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
       continue;
     }
 
-    const galleryImages = prod.images
+    const galleryImagesRaw = prod.images
       .filter(img => img.imageType === 'gallery')
       .sort((a, b) => a.sortOrder - b.sortOrder);
 
-    if (galleryImages.length === 0) {
+    if (galleryImagesRaw.length === 0) {
       logger.debug('Skipping product with no gallery images', { id1688: prod.id1688 });
       continue;
+    }
+
+    // Promote the first clean image (no Chinese text, no watermark) to position 0
+    // so eBay's main/gallery thumbnail is not a contaminated image.
+    // Mirrors the Amazon excel-generator.ts reorder strategy.
+    const cleanIdx = galleryImagesRaw.findIndex(
+      img => !img.hasChineseText && !img.hasWatermark
+    );
+    const galleryImages = cleanIdx > 0
+      ? [galleryImagesRaw[cleanIdx], ...galleryImagesRaw.filter((_, i) => i !== cleanIdx)]
+      : galleryImagesRaw;
+
+    if (cleanIdx === -1) {
+      logger.warn('No clean gallery images — all have Chinese text or watermark', { id1688: prod.id1688 });
+    } else if (cleanIdx > 0) {
+      logger.info('Promoted clean image to main slot', {
+        id1688: prod.id1688,
+        promotedFromIndex: cleanIdx,
+      });
     }
 
     const en = prod.en;

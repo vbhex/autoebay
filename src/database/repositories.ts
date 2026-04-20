@@ -56,6 +56,8 @@ async function batchGetImagesOk(
             ok.image_url AS imageUrl,
             ok.image_type AS imageType,
             ok.sort_order AS sortOrder,
+            ok.has_chinese_text AS hasChineseText,
+            ok.has_watermark AS hasWatermark,
             ok.passed
      FROM products_images_ok ok
      WHERE ok.product_id IN (${inList(productIds.length)}) ${where}

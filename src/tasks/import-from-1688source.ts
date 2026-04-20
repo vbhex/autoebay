@@ -119,8 +119,8 @@ async function main() {
 
       // Copy products_images_ok
       await pool.query(`
-        INSERT IGNORE INTO products_images_ok (product_id, raw_image_id, image_url, image_type, sort_order, passed)
-        SELECT ?, spi.raw_image_id, spi.image_url, spi.image_type, spi.sort_order, spi.passed
+        INSERT IGNORE INTO products_images_ok (product_id, raw_image_id, image_url, image_type, sort_order, has_chinese_text, has_watermark, passed)
+        SELECT ?, spi.raw_image_id, spi.image_url, spi.image_type, spi.sort_order, spi.has_chinese_text, spi.has_watermark, spi.passed
         FROM ${sourceDb}.products_images_ok spi
         WHERE spi.product_id = ? AND spi.passed = 1
       `, [localProductId, sp.id]);

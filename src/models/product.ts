@@ -150,6 +150,8 @@ export interface ImageOk {
   imageUrl: string;
   imageType: 'gallery' | 'description' | 'variant';
   sortOrder: number;
+  hasChineseText?: boolean;
+  hasWatermark?: boolean;
   passed: boolean;
 }
 

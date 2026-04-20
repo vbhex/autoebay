@@ -87,6 +87,8 @@ export async function initSchema(): Promise<void> {
       image_url VARCHAR(1000) NOT NULL,
       image_type ENUM('gallery','description','variant') DEFAULT 'gallery',
       sort_order INT DEFAULT 0,
+      has_chinese_text TINYINT(1) DEFAULT 0,
+      has_watermark TINYINT(1) DEFAULT 0,
       passed TINYINT(1) DEFAULT 1,
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
       INDEX idx_product_id (product_id)
