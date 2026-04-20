@@ -538,6 +538,7 @@ function buildRow(
   row[COL_IDX['*Format']] = 'FixedPrice';
   row[COL_IDX['*Duration']] = 'GTC';
   row[COL_IDX['*Location']] = config.listing.shipsFrom;
+  row[COL_IDX['Country']] = 'CN';
   row[COL_IDX['*DispatchTimeMax']] = String(config.listing.dispatchDays);
 
   // ── Item specifics (required) ───────────────────────────────────────────────

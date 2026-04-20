@@ -63,6 +63,7 @@ export const CSV_COLUMNS = [
   /* 52 */ '*Quantity',
   /* 53 */ 'ImmediatePayRequired',
   /* 54 */ '*Location',
+  /* 55a */ 'Country',
   /* 55 */ 'ShippingType',
   /* 56 */ 'ShippingService-1:Option',
   /* 57 */ 'ShippingService-1:Cost',
