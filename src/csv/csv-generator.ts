@@ -373,6 +373,24 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
 
         const variantValues = parseRelationDetails(relationDetails);
 
+        // eBay rule: cap at 30 unique values per dimension (hard limit). If a child's
+        // Color/Size is NOT in the accepted parent set (either already at cap or new value
+        // that would exceed cap), skip the child entirely — otherwise eBay returns
+        // error 21916664 because the child references a variation value not declared
+        // in the parent's RelationshipDetails.
+        if (variantValues.Color) {
+          if (!allColors.has(variantValues.Color)) {
+            if (allColors.size >= 30) continue; // would exceed cap — skip this SKU
+            allColors.add(variantValues.Color);
+          }
+        }
+        if (variantValues.Size) {
+          if (!allSizes.has(variantValues.Size)) {
+            if (allSizes.size >= 30) continue;
+            allSizes.add(variantValues.Size);
+          }
+        }
+
         const childRow = buildRow(prod, catInfo, {
           sku: childSku,
           title,
@@ -387,9 +405,6 @@ export async function generateCSV(products: ExportProduct[]): Promise<CSVResult 
 
         // eBay rule: VariationSpecifics and ItemSpecifics MUST be different fields.
         // Only clear C:Color / C:Size if they are actually variation dimensions for this category.
-        // Cap at 30 unique values per dimension (eBay hard limit).
-        if (variantValues.Color && allColors.size < 30) allColors.add(variantValues.Color);
-        if (variantValues.Size  && allSizes.size  < 30) allSizes.add(variantValues.Size);
         if (catInfo.variationDimensions.includes('Color')) childRow[COL_IDX['*C:Color']] = ''; // in RelDet
         if (catInfo.variationDimensions.includes('Size'))  childRow[COL_IDX['*C:Size']]  = ''; // in RelDet
 

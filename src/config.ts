@@ -105,7 +105,7 @@ export function loadConfig(): Config {
       cost: getEnvNumber('SHIPPING_COST', 0),
     },
     businessPolicies: {
-      shippingProfileName: getEnvVar('EBAY_SHIPPING_PROFILE', 'Free Shipping Via China Post2'),
+      shippingProfileName: getEnvVar('EBAY_SHIPPING_PROFILE', 'SpeedPAK Free Shipping'),
       returnProfileName: getEnvVar('EBAY_RETURN_PROFILE', 'Return policy'),
       paymentProfileName: getEnvVar('EBAY_PAYMENT_PROFILE', 'eBay Managed Payments (276048238018)'),
     },
