@@ -123,6 +123,10 @@ export const EBAY_CATEGORY_MAP: Record<string, EbayCategoryInfo> = {
 
   // ── Body Jewelry (category 261986 — confirmed accessible to Greater China sellers) ──
   'BodyChain':           { ebayCategoryId: 261986, ebayCategoryName: 'Body Jewelry', conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Body Chain', 'Base Metal': 'Alloy', 'Country/Region of Manufacture': 'China' } },
+
+  // ── Earmuffs (cat 45230 Women's Hats — NOT 45220 Hair Accessories which is blocked) ──
+  // CAUTION: test one listing first before bulk upload — adjacent to blocked cat 45220
+  'Earmuffs': { ebayCategoryId: 45230, ebayCategoryName: "Women's Hats", conditionId: 1500, variationDimensions: ['Color'], itemSpecifics: { Type: 'Earmuffs', Department: 'Women', Material: 'Mixed', 'Country/Region of Manufacture': 'China' } },
 };
 
 export const EBAY_CATEGORIES = Object.keys(EBAY_CATEGORY_MAP);
