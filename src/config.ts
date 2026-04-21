@@ -95,7 +95,7 @@ export function loadConfig(): Config {
     listing: {
       brandName: getEnvVar('LISTING_BRAND_NAME', 'Unbranded'),
       shipsFrom: getEnvVar('LISTING_SHIPS_FROM', 'Shenzhen, China'),
-      defaultStock: getEnvNumber('LISTING_DEFAULT_STOCK', 3),
+      defaultStock: getEnvNumber('LISTING_DEFAULT_STOCK', 1),
       condition: getEnvVar('LISTING_CONDITION', 'New'),
       returnDays: getEnvNumber('LISTING_RETURN_DAYS', 30),
       dispatchDays: getEnvNumber('LISTING_DISPATCH_DAYS', 3),
