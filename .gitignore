@@ -5,4 +5,7 @@ output/
 logs/
 data/
 *.log
-.claude/
+# Ignore Claude Code transient state, keep shared enforcement hooks + settings.
+.claude/worktrees/
+.claude/cache/
+.claude/settings.local.json
