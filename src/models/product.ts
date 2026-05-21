@@ -1,7 +1,7 @@
 /**
  * eBay category mapping from 1688 source categories.
  *
- * Maps CLI category names (used in 1688_source.products.category)
+ * Maps CLI category names (used in product_sources.products.category)
  * to eBay leaf category IDs and metadata needed for CSV generation.
  */
 

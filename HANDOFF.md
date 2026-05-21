@@ -282,7 +282,7 @@ sshpass -p "$CHINA_MACBOOK_PASSWORD" ssh \
   "$CHINA_MACBOOK_USER@$CHINA_MACBOOK_IP"
 ```
 
-MySQL on China MacBook: user `root`, password `52Tiananmen`, DB `ebay_autostore` (NEVER write to `1688_source` — reserved for AutoStore Mac client).
+MySQL on China MacBook: user `root`, password `52Tiananmen`, DB `ebay_autostore` (NEVER write to `product_sources` — reserved for AutoStore Mac client).
 
 ### Browser
 

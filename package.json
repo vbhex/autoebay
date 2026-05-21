@@ -4,7 +4,7 @@
   "description": "eBay product listing automation — CSV generation + Seller Hub upload",
   "scripts": {
     "build": "./node_modules/.bin/tsc",
-    "task:import": "npm run build && node dist/tasks/import-from-1688source.js",
+    "task:import": "npm run build && node dist/tasks/import-from-product-sources.js",
     "task:csv": "npm run build && node dist/tasks/task1-csv-gen.js",
     "task:csv:regen": "npm run build && node dist/tasks/task1-csv-gen.js --regenerate",
     "task:upload": "npm run build && node dist/tasks/task2-upload.js",

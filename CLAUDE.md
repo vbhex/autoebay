@@ -22,7 +22,7 @@ then uploads them to eBay Seller Hub Reports via browser automation.
 ## Architecture
 
 ```
-1688_source DB  →  [import-from-1688source: pull authorized products]
+product_sources DB  →  [import-from-product-sources: pull authorized products]
                 →  ebay_autostore DB (local copy)
                 →  [task1-csv-gen: generate CSV for Seller Hub Reports]
                 →  output/ebay-export-YYYY-MM-DD.csv
@@ -36,7 +36,7 @@ then uploads them to eBay Seller Hub Reports via browser automation.
 ## Database
 
 Uses **two databases**:
-- `1688_source` — read-only, shared with 1688_scrapper (source data)
+- `product_sources` — read-only, shared with 1688_scrapper (source data)
 - `ebay_autostore` — local copy of products for eBay pipeline
 
 ### ebay_autostore tables
@@ -110,7 +110,7 @@ Two rules govern how every eBay listing handles shipping:
 # Build
 ./node_modules/.bin/tsc          # NOT npx tsc
 
-# Import from 1688_source
+# Import from product_sources
 npm run task:import               # import 100 products
 npm run task:import -- --limit 50
 npm run task:import -- --category "quartz watches"
@@ -138,7 +138,7 @@ git pull
 # First time: login and save cookies
 npm run task:login
 
-# Import authorized products from 1688_source
+# Import authorized products from product_sources
 npm run task:import -- --limit 10
 
 # Generate CSV
@@ -206,7 +206,7 @@ ebay/
       column-mapping.ts    — CSV columns for Seller Hub Reports
       csv-generator.ts     — CSV file generator
     tasks/
-      import-from-1688source.ts — import products from 1688_source
+      import-from-product-sources.ts — import products from product_sources
       task1-csv-gen.ts     — CLI: generate CSV from DB
       task2-upload.ts      — CLI: upload CSV to eBay Seller Hub
     database/

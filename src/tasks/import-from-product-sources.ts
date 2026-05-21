@@ -1,7 +1,7 @@
 /**
- * Import authorized products from 1688_source into ebay_autostore.
+ * Import authorized products from product_sources into ebay_autostore.
  *
- * Reads translated + authorized products from 1688_source and inserts them
+ * Reads translated + authorized products from product_sources and inserts them
  * into the local ebay_autostore database, ready for CSV generation.
  *
  * Only imports products whose categories map to eBay categories.
@@ -36,7 +36,7 @@ async function main() {
   const categoryFilter = args.find((_, i, a) => a[i - 1] === '--category') || undefined;
   const dryRun = args.includes('--dry-run');
 
-  logger.info('Starting import from 1688_source', { limit, categoryFilter, dryRun });
+  logger.info('Starting import from product_sources', { limit, categoryFilter, dryRun });
 
   await initSchema();
   const pool = await getPool();
@@ -53,7 +53,7 @@ async function main() {
 
   const placeholders = categories.map(() => '?').join(', ');
 
-  // Find products in 1688_source that are:
+  // Find products in product_sources that are:
   // 1. Translated (have products_en data)
   // 2. In authorized_products (brand-verified)
   // 3. In a category that maps to eBay

@@ -268,7 +268,7 @@ export async function upsertPlatformListing(
       updated_at = NOW()
   `, [productId, platform, platformProductId]);
 
-  // Also write to 1688_source.listing_mappings (cross-DB)
+  // Also write to product_sources.listing_mappings (cross-DB)
   try {
     await p.query(`
       INSERT INTO ${config.sourceDb.database}.listing_mappings
@@ -281,7 +281,7 @@ export async function upsertPlatformListing(
         updated_at = NOW()
     `, [platform, platformProductId, id1688]);
   } catch (err: any) {
-    logger.warn('Could not write to 1688_source.listing_mappings', { error: err.message });
+    logger.warn('Could not write to product_sources.listing_mappings', { error: err.message });
   }
 
   logger.info('Platform listing upserted', { id1688, platform, platformProductId });
